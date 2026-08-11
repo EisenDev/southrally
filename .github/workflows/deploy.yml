@@ -126,6 +126,6 @@ jobs:
             printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose pull
             docker compose up -d --remove-orphans
-            docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile
+            docker compose up -d --force-recreate caddy
             docker image prune -f
             docker compose ps
