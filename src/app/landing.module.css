@@ -288,7 +288,13 @@
 .socials a { width: 36px; height: 36px; display: grid; place-items: center; color: var(--sr-ivory); text-decoration: none; border: 1px solid hsl(43 42% 94% / 0.6); border-radius: 50%; }
 .socials a:hover { background: var(--sr-ivory); color: var(--sr-green); }
 .socials svg { width: 18px; }
-.copyright { width: min(1180px, 100%); margin: 0 auto; padding-top: 20px; text-align: center; border-top: 1px solid hsl(63 24% 55% / 0.35); color: hsl(43 42% 94% / 0.62); font-size: 0.72rem; }
+.footerBottom { width: min(1180px, 100%); margin: 0 auto; padding-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid hsl(63 24% 55% / 0.35); }
+.copyright { color: hsl(43 42% 94% / 0.62); font-size: 0.72rem; }
+.makerMark { display: inline-flex; align-items: center; gap: 6px; color: hsl(43 42% 94% / 0.62); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.makerMark > span { color: var(--sr-gold); font-size: 0.62rem; }
+.makerMark a { color: var(--sr-ivory); font-weight: 700; text-underline-offset: 4px; transition: color 180ms ease-in-out; }
+.makerMark a:hover { color: var(--sr-gold); }
+.makerMark a:focus-visible { border-radius: 2px; outline: 2px solid var(--sr-gold); outline-offset: 4px; }
 
 @media (max-width: 1050px) {
   .desktopNav { display: none; }
@@ -356,6 +362,7 @@
   .footerBrand { grid-column: 1 / -1; }
   .footerBrand p { margin-left: 0; }
   .socials { grid-column: 1 / -1; }
+  .footerBottom { flex-direction: column; text-align: center; }
 }
 
 @media (max-width: 390px) {

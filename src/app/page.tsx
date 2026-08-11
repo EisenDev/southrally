@@ -365,7 +365,16 @@ export default function LandingPage() {
           <nav aria-label="Support links"><h2>Support</h2><a href="#">Help Center</a><a href="#">Terms</a><a href="#">Privacy</a></nav>
           <div className={styles.socials}><a href="#" aria-label="South Rally on Instagram">◎</a><a href="#" aria-label="South Rally on Facebook">f</a><a href="#" aria-label="South Rally on TikTok">♪</a></div>
         </div>
-        <div className={styles.copyright}>© 2026 South Rally Pickleball Club. All rights reserved.</div>
+        <div className={styles.footerBottom}>
+          <div className={styles.copyright}>© 2026 South Rally Pickleball Club. All rights reserved.</div>
+          <div className={styles.makerMark}>
+            <span aria-hidden="true">✦</span>
+            Crafted and built by{' '}
+            <a href="https://novaryn.tech/" target="_blank" rel="noopener noreferrer">
+              Novaryn
+            </a>
+          </div>
+        </div>
       </footer>
 
       <Suspense fallback={null}>

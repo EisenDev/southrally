@@ -18,7 +18,8 @@ The page renders these sections in order:
 4. Open play: skill-based matching summary and an open-play CTA.
 5. Membership and rewards: member pass, progress, and reward examples.
 6. Events and community: three event cards and an events CTA.
-7. Final CTA and footer: booking/signup actions and club navigation.
+7. Final CTA and footer: booking/signup actions, club navigation, and a compact
+   “Crafted and built by Novaryn” maker credit.
 
 ## Behavior
 
@@ -30,6 +31,8 @@ The page renders these sections in order:
 - The mobile menu retains the same session-aware header action and closes after
   link selection.
 - OAuth errors continue to open the existing sign-in modal with the error.
+- The footer’s **Novaryn** credit opens `https://novaryn.tech/` in a new tab
+  without granting the destination access to the South Rally browser context.
 
 ## Visual system
 

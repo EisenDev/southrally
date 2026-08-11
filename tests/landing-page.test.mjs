@@ -45,3 +45,10 @@ test('keeps public calls to action out of client and admin routes', () => {
   assert.match(pageSource, /onClick=\{\(\) => setIsSignInOpen\(true\)\}>Login<\/button>/)
   assert.match(pageSource, /<Link href="\/signup" className=\{styles\.lightButton\}>Book a Court<\/Link>/)
 })
+
+test('credits Novaryn in the footer with a safe external link', () => {
+  assert.match(pageSource, /Crafted and built by/)
+  assert.match(pageSource, /href="https:\/\/novaryn\.tech\/"/)
+  assert.match(pageSource, /target="_blank"/)
+  assert.match(pageSource, /rel="noopener noreferrer"/)
+})
