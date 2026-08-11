@@ -84,7 +84,7 @@ export default async function LedgerPage({ searchParams }: PageProps) {
 
     for (const t of allStatsTransactions) {
       const tTime = t.createdAt.getTime()
-      const isGuestRefund = t.type === 'REFUND' && (t.user?.email?.endsWith('@paddleyard.guest') ?? false)
+      const isGuestRefund = t.type === 'REFUND' && (t.user?.email?.endsWith('@southrally.guest') ?? false)
       if (t.type === 'REFUND' && !isGuestRefund) continue
 
       const amt = isGuestRefund ? -Number(t.amount) : Number(t.amount)

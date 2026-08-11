@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# South Rally
+
+South Rally is a Next.js pickleball management application.
 
 ## Getting Started
 
@@ -6,15 +8,28 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
+The development command intentionally uses Webpack. Turbopack on this project
+can enter a runaway compilation state that consumes multiple CPU cores and
+prevents the first page from loading.
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Database configuration
+
+South Rally must use its own Supabase project. Copy the connection strings from
+the South Rally project's **Connect** panel into `.env`:
+
+```dotenv
+DATABASE_URL="postgresql://<pooler-user>:<password>@<pooler-host>:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://<direct-user>:<password>@<direct-host>:5432/postgres"
+```
+
+`DATABASE_URL` is the pooled runtime connection and `DIRECT_URL` is the direct
+connection Prisma uses for migrations. Supabase connection URLs commonly keep
+the PostgreSQL database segment named `postgres`; the Supabase project itself
+should be named **south-rally**. Never commit `.env`.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

@@ -1640,9 +1640,9 @@ export async function adminCancelBookingAction(bookingId: string): Promise<Actio
           }
         })
       } else if (booking.status === 'PAID' && Number(booking.price) > 0) {
-        // Guest/no-account players (identified by @paddleyard.guest email) paid cash at the
+        // Guest/no-account players (identified by @southrally.guest email) paid cash at the
         // counter. Do NOT refund to their wallet — the admin handles cash refund manually.
-        const isGuestAccount = booking.user.email?.endsWith('@paddleyard.guest') ?? false
+        const isGuestAccount = booking.user.email?.endsWith('@southrally.guest') ?? false
 
         if (!isGuestAccount) {
           await tx.user.update({
@@ -1959,7 +1959,7 @@ export async function expirePromoCreditsAction(params: {
 }
 
 // ── No-Account Player Booking ───────────────────────────────────────────────────
-// Books a court slot for a walk-in player who has no PaddleYard account.
+// Books a court slot for a walk-in player who has no South Rally account.
 // Creates a placeholder user record, marks the booking PAID, and records a CASH_TOPUP.
 export async function adminNoAccountBookingAction(params: {
   guestName: string
@@ -1999,7 +1999,7 @@ export async function adminNoAccountBookingAction(params: {
 
     const cleanName = guestName.trim().replace(/[^a-zA-Z0-9 ]/g, '')
     const emailSlug = cleanName.toLowerCase().replace(/\s+/g, '-')
-    const guestEmail = `guest-${emailSlug}-${Math.random().toString(36).substring(2, 7)}@paddleyard.guest`
+    const guestEmail = `guest-${emailSlug}-${Math.random().toString(36).substring(2, 7)}@southrally.guest`
 
     await db.$transaction(async (tx) => {
       // 1. Create the placeholder guest User record (with PLAYER role so it displays as standard Player booking)
@@ -2052,4 +2052,3 @@ export async function adminNoAccountBookingAction(params: {
     return { success: false, error: error.message || 'Failed to create no-account booking.' }
   }
 }
-

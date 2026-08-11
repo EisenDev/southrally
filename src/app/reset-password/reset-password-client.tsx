@@ -135,8 +135,8 @@ export function ResetPasswordClient({ token, isValid }: ResetPasswordClientProps
     <div style={wrapperStyle}>
       <div style={cardStyle}>
         <div style={logoContainerStyle}>
-          <img src="https://paddleyrd.com/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'contain' }} />
-          <h1 style={{ fontSize: '22px', fontWeight: 850, color: '#007C80', margin: '8px 0 0', letterSpacing: '-0.02em' }}>PaddleYard</h1>
+          <img src="/south-rally-logo.png" alt="South Rally crest" style={{ width: '64px', height: '66px', borderRadius: '50%', objectFit: 'contain' }} />
+          <h1 style={{ fontSize: '22px', fontWeight: 850, color: '#073f31', margin: '8px 0 0', letterSpacing: '0.04em' }}>South Rally</h1>
           <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>Create a new password for your account</p>
         </div>
 

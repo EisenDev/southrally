@@ -6,9 +6,9 @@
 
 ---
 
-## 1. What Is PaddleYard v2?
+## 1. What Is South Rally?
 
-PaddleYard v2 is a premium **Pickleball Court Booking, Stacking, and Club Management Platform**. It is structured as a modular monolithic Next.js application, deliberately organized by business domains. 
+South Rally is a premium **Pickleball Court Booking, Stacking, and Club Management Platform**. It is structured as a modular monolithic Next.js application, deliberately organized by business domains.
 
 The architecture is built for maximum developer velocity, tight database transaction integrity (critical for booking double-allocations and credit balance deductions), and absolute simplicity in deployments.
 
@@ -18,7 +18,7 @@ The architecture is built for maximum developer velocity, tight database transac
 
 ### Overview
 
-PaddleYard v2 uses a **modular monolith** style — a single codebase deployable as a single unit but partitioned internally into strict, isolated domain modules.
+South Rally uses a **modular monolith** style — a single codebase deployable as a single unit but partitioned internally into strict, isolated domain modules.
 
 Each module manages:
 *   Its own services (business logic)

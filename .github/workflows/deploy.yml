@@ -1,13 +1,11 @@
-name: Staging Deployment CI/CD
+name: South Rally Production Deployment
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: eisendev/southrally
 
 jobs:
   build-and-push:
@@ -53,61 +51,80 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-push
+    permissions:
+      contents: read
+      packages: read
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Synchronize production database schema
+        run: npx prisma db push --skip-generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Upload deployment configuration
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml,Caddyfile"
+          target: "/home/${{ secrets.DROPLET_USER }}/south-rally"
+
       - name: SSH and Deploy to DigitalOcean Server
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          AUTH_GOOGLE_ID: ${{ secrets.AUTH_GOOGLE_ID }}
+          AUTH_GOOGLE_SECRET: ${{ secrets.AUTH_GOOGLE_SECRET }}
+          PAYMONGO_SECRET_KEY: ${{ secrets.PAYMONGO_SECRET_KEY }}
+          PAYMONGO_WEBHOOK_SECRET: ${{ secrets.PAYMONGO_WEBHOOK_SECRET }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+          GHCR_TOKEN: ${{ github.token }}
         with:
-          host: 159.65.4.123
-          username: root
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 45s
           command_timeout: 10m
+          envs: DATABASE_URL,DIRECT_URL,AUTH_SECRET,AUTH_GOOGLE_ID,AUTH_GOOGLE_SECRET,PAYMONGO_SECRET_KEY,PAYMONGO_WEBHOOK_SECRET,RESEND_API_KEY,RESEND_FROM_EMAIL,GHCR_TOKEN
           script: |
-            # 1. Create project folder if not exists
-            mkdir -p ~/pickleyard
-            cd ~/pickleyard
+            set -eu
+            cd ~/south-rally
 
-            # 2. Write docker-compose.yml file
-            cat << 'EOF' > docker-compose.yml
-            version: '3.8'
+            umask 077
+            {
+              printf 'DATABASE_URL=%s\n' "$DATABASE_URL"
+              printf 'DIRECT_URL=%s\n' "$DIRECT_URL"
+              printf 'AUTH_SECRET=%s\n' "$AUTH_SECRET"
+              printf 'AUTH_TRUST_HOST=true\n'
+              printf 'AUTH_URL=https://southrally.novaryn.com\n'
+              printf 'NEXTAUTH_URL=https://southrally.novaryn.com\n'
+              printf 'AUTH_GOOGLE_ID=%s\n' "$AUTH_GOOGLE_ID"
+              printf 'AUTH_GOOGLE_SECRET=%s\n' "$AUTH_GOOGLE_SECRET"
+              printf 'PAYMONGO_SECRET_KEY=%s\n' "$PAYMONGO_SECRET_KEY"
+              printf 'PAYMONGO_WEBHOOK_SECRET=%s\n' "$PAYMONGO_WEBHOOK_SECRET"
+              printf 'RESEND_API_KEY=%s\n' "$RESEND_API_KEY"
+              printf 'RESEND_FROM_EMAIL=%s\n' "$RESEND_FROM_EMAIL"
+            } > .env
 
-            services:
-              web:
-                image: ghcr.io/eisendev/pickleyard:latest
-                container_name: pickleyard-web
-                restart: always
-                ports:
-                  - "3000:3000"
-                environment:
-                  DATABASE_URL: ${DATABASE_URL}
-                  DIRECT_URL: ${DIRECT_URL}
-                  AUTH_SECRET: ${AUTH_SECRET}
-                  AUTH_TRUST_HOST: ${AUTH_TRUST_HOST:-true}
-                  AUTH_URL: ${AUTH_URL}
-                  NEXTAUTH_URL: ${NEXTAUTH_URL:-https://pickleyard.zeraynce.com}
-                  PAYMONGO_SECRET_KEY: ${PAYMONGO_SECRET_KEY}
-                  PAYMONGO_WEBHOOK_SECRET: ${PAYMONGO_WEBHOOK_SECRET}
-                  AUTH_GOOGLE_ID: ${AUTH_GOOGLE_ID}
-                  AUTH_GOOGLE_SECRET: ${AUTH_GOOGLE_SECRET}
-                  SMTP_USER: ${SMTP_USER}
-                  SMTP_PASS: ${SMTP_PASS}
-                  RESEND_API_KEY: ${RESEND_API_KEY}
-                  RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL}
-                  NODE_OPTIONS: "--max-old-space-size=1024"
-                deploy:
-                  resources:
-                    limits:
-                      memory: 1024M
-            EOF
-
-            # 3. Log in to GitHub Package Registry on the target server
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-            # 4. Pull, recreate, and run container
+            printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose pull
-            docker compose down
-            docker compose up -d
-
-            # 5. Apply database schemas
-            docker compose exec -T web npx prisma@5.22.0 db push --skip-generate --accept-data-loss
+            docker compose up -d --remove-orphans
+            docker image prune -f
+            docker compose ps

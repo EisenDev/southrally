@@ -228,7 +228,7 @@ export function TopUpClient({ userBalance, userId }: Props) {
               gap: '2px'
             }}>
               <span style={{ fontWeight: 800, color: '#d97706', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                🎁 Yard Points Bonus Schedule:
+                🎁 Rally Points Bonus Schedule:
               </span>
               <span>₱500+ top-up gets <strong>75 YP</strong></span>
               <span>₱1000+ top-up gets <strong>180 YP</strong></span>
@@ -247,7 +247,7 @@ export function TopUpClient({ userBalance, userId }: Props) {
                 <span style={{ fontWeight: 700 }}>₱{userBalance.toFixed(2)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                <span>Yard Points Reward</span>
+                <span>Rally Points Reward</span>
                 <span style={{ fontWeight: 700, color: '#d97706' }}>
                   {getTopUpPoints(finalAmount) > 0 ? `+${getTopUpPoints(finalAmount)} YP` : 'None (min. ₱500)'}
                 </span>
@@ -351,7 +351,7 @@ export function TopUpClient({ userBalance, userId }: Props) {
                 Top Up Credits
               </h1>
               <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginTop: '4px', margin: '4px 0 0' }}>
-                Add credits securely to your PaddleYard account.
+                Add credits securely to your South Rally account.
               </p>
             </div>
           </div>

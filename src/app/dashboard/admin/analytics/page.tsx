@@ -96,7 +96,7 @@ export default async function AnalyticsPage() {
 
   for (const tx of allTransactions) {
     const isTopup = tx.type === 'TOPUP' || tx.type === 'CASH_TOPUP'
-    const isGuestRefund = tx.type === 'REFUND' && (tx.user?.email?.endsWith('@paddleyard.guest') ?? false)
+    const isGuestRefund = tx.type === 'REFUND' && (tx.user?.email?.endsWith('@southrally.guest') ?? false)
     if (!isTopup && !isGuestRefund) continue
 
     const txTime = tx.createdAt.getTime()
@@ -119,7 +119,7 @@ export default async function AnalyticsPage() {
     const dayAmount = allTransactions
       .filter(tx => {
         const isTopup = tx.type === 'TOPUP' || tx.type === 'CASH_TOPUP'
-        const isGuestRefund = tx.type === 'REFUND' && (tx.user?.email?.endsWith('@paddleyard.guest') ?? false)
+        const isGuestRefund = tx.type === 'REFUND' && (tx.user?.email?.endsWith('@southrally.guest') ?? false)
         const txTime = tx.createdAt.getTime()
         return (isTopup || isGuestRefund) && txTime >= dayStart && txTime < dayEnd
       })

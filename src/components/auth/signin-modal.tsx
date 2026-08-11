@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useTransition, useEffect } from 'react'
+import { useState, useTransition } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { X, AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react'
@@ -27,15 +28,14 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
   const [forgotSuccess, setForgotSuccess] = useState<string | null>(null)
   const router = useRouter()
 
-  useEffect(() => {
-    if (!isOpen) {
-      setOtpStep(false)
-      setOtpCode('')
-      setForgotStep(false)
-      setForgotSuccess(null)
-      setError(null)
-    }
-  }, [isOpen])
+  const handleClose = () => {
+    setOtpStep(false)
+    setOtpCode('')
+    setForgotStep(false)
+    setForgotSuccess(null)
+    setError(null)
+    onClose()
+  }
 
   if (!isOpen) return null
 
@@ -70,7 +70,7 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
           setError(result.error || 'Login failed')
         }
       } else {
-        onClose()
+        handleClose()
         router.push('/dashboard')
         router.refresh()
       }
@@ -100,7 +100,7 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
   return (
     <div
       className="signin-backdrop animate-fade-in"
-      onClick={onClose}
+      onClick={handleClose}
       role="dialog"
       aria-modal="true"
       aria-label="Sign in"
@@ -110,15 +110,16 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
-        <button onClick={onClose} className="signin-close" aria-label="Close">
+        <button onClick={handleClose} className="signin-close" aria-label="Close">
           <X size={16} />
         </button>
 
         {/* Header */}
         <div className="signin-header">
-          <div className="signin-logo-mark" style={{ background: 'transparent', border: 'none', width: 88, height: 88 }}>
-            <img src="/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: 88, height: 88, objectFit: 'contain' }} />
+          <div className="signin-logo-mark" style={{ background: 'white', border: '1px solid hsl(63 24% 55% / 0.4)', width: 128, height: 128, borderRadius: '50%', boxShadow: '0 8px 24px hsl(158 67% 12% / 0.14)' }}>
+            <Image src="/south-rally-logo.png" alt="South Rally logo" width={112} height={116} priority unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
           </div>
+          <strong className="signin-brand">South Rally</strong>
           <h2 className="signin-title">{forgotStep ? 'Reset Password' : 'Welcome back'}</h2>
           <p className="signin-subtitle">
             {forgotStep ? 'Enter your email to receive a password reset link' : 'Sign in to check court stacks & book'}
@@ -328,7 +329,7 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
           {onSwitchToSignUp ? (
             <button
               onClick={() => {
-                onClose()
+                handleClose()
                 onSwitchToSignUp()
               }}
               style={{
@@ -345,7 +346,7 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
               Create one
             </button>
           ) : (
-            <Link href="/signup" onClick={onClose} className="signin-link">
+            <Link href="/signup" onClick={handleClose} className="signin-link">
               Create one
             </Link>
           )}
@@ -356,7 +357,7 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
         .signin-backdrop {
           position: fixed;
           inset: 0;
-          background: var(--color-overlay);
+          background: linear-gradient(135deg, hsl(158 67% 8% / 0.84), hsl(263 45% 14% / 0.82));
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
           display: flex;
@@ -367,11 +368,16 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
         }
 
         .signin-panel {
+          --color-primary: hsl(158 67% 12%);
+          --color-primary-hover: hsl(158 67% 17%);
+          --color-secondary: hsl(158 67% 12%);
+          --shadow-focus: 0 0 0 3px hsl(69 35% 43% / 0.24);
+          --shadow-primary-btn: 0 8px 22px hsl(158 67% 12% / 0.22);
           position: relative;
           width: 100%;
           max-width: 380px;
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
+          background: hsl(43 42% 96%);
+          border: 1px solid hsl(63 24% 55% / 0.48);
           border-radius: var(--radius-2xl);
           padding: 36px 32px 28px;
           box-shadow: var(--shadow-xl);
@@ -436,11 +442,19 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
           background: var(--color-accent);
         }
         .signin-title {
+          font-family: Georgia, 'Times New Roman', serif;
           font-size: 22px;
-          font-weight: 800;
+          font-weight: 500;
           color: var(--color-text-primary);
           letter-spacing: -0.02em;
           margin: 0;
+        }
+        .signin-brand {
+          margin-top: -8px;
+          color: hsl(158 67% 12%);
+          font: 500 13px Georgia, 'Times New Roman', serif;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
         }
         .signin-subtitle {
           font-size: 13px;
@@ -455,7 +469,7 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
           gap: 10px;
           width: 100%;
           height: 42px;
-          background: var(--color-card);
+          background: hsl(43 42% 98%);
           border: 1px solid var(--color-border);
           border-radius: var(--radius-lg);
           font-size: 13px;
@@ -534,7 +548,7 @@ export function SignInModal({ isOpen, onClose, onSwitchToSignUp, initialError }:
           width: 100%;
           height: 42px;
           padding: 0 14px;
-          background: var(--color-card);
+          background: hsl(43 42% 98%);
           border: 1px solid var(--color-border);
           border-radius: var(--radius-lg);
           font-size: 14px;

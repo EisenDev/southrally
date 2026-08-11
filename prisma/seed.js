@@ -29,7 +29,7 @@ async function main() {
   const hashedPassword = '$2b$12$2g9iwDDcpiXuP8L09CHRzugEz4R8rFMx6saAK7bYXoJpTohVbMCGm'
   await prisma.user.create({
     data: {
-      name: 'PaddleYard Admin',
+      name: 'South Rally Admin',
       email: 'pickleballsulop@gmail.com',
       hashedPassword,
       duprRating: 3.5,

@@ -32,23 +32,23 @@
 2026-07-25T13:03:10.9278825Z ##[group]Build container for action use: '/home/runner/work/_actions/appleboy/ssh-action/v1.0.3/Dockerfile'.
 2026-07-25T13:03:10.9326047Z ##[command]/usr/bin/docker build -t e15494:7a92d03b2ca74f3ea31fbf239909be61 -f "/home/runner/work/_actions/appleboy/ssh-action/v1.0.3/Dockerfile" "/home/runner/work/_actions/appleboy/ssh-action/v1.0.3"
 2026-07-25T13:03:12.1392094Z #0 building with "default" instance using docker driver
-2026-07-25T13:03:12.1474688Z 
+2026-07-25T13:03:12.1474688Z
 2026-07-25T13:03:12.1476011Z #1 [internal] load build definition from Dockerfile
 2026-07-25T13:03:12.3536568Z #1 transferring dockerfile:
 2026-07-25T13:03:12.3537172Z #1 transferring dockerfile: 149B done
 2026-07-25T13:03:12.3538543Z #1 DONE 0.3s
-2026-07-25T13:03:12.6553946Z 
+2026-07-25T13:03:12.6553946Z
 2026-07-25T13:03:12.6555884Z #2 [internal] load metadata for ghcr.io/appleboy/drone-ssh:1.7.3
 2026-07-25T13:03:13.2024833Z #2 DONE 0.5s
-2026-07-25T13:03:13.3445622Z 
+2026-07-25T13:03:13.3445622Z
 2026-07-25T13:03:13.3447057Z #3 [internal] load .dockerignore
 2026-07-25T13:03:13.3449492Z #3 transferring context: 2B done
 2026-07-25T13:03:13.3449911Z #3 DONE 0.0s
-2026-07-25T13:03:13.3450166Z 
+2026-07-25T13:03:13.3450166Z
 2026-07-25T13:03:13.3450340Z #4 [internal] load build context
 2026-07-25T13:03:13.3450709Z #4 transferring context: 108B done
 2026-07-25T13:03:13.3451101Z #4 DONE 0.0s
-2026-07-25T13:03:13.3451488Z 
+2026-07-25T13:03:13.3451488Z
 2026-07-25T13:03:13.3452025Z #5 [1/2] FROM ghcr.io/appleboy/drone-ssh:1.7.3@sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158
 2026-07-25T13:03:13.3452854Z #5 resolve ghcr.io/appleboy/drone-ssh:1.7.3@sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158 0.0s done
 2026-07-25T13:03:13.3453668Z #5 sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158 2.38kB / 2.38kB done
@@ -72,10 +72,10 @@
 2026-07-25T13:03:19.7368066Z #5 extracting sha256:066e5b821e26d8313055e0314c056e6c297847bcf963e5df10e7aa03107f2246 done
 2026-07-25T13:03:19.7369268Z #5 extracting sha256:47353a6f9201a145b687290e5ae0278ac269faf4bb61bee3e9246c37a8d74277 0.0s done
 2026-07-25T13:03:19.7370000Z #5 DONE 6.5s
-2026-07-25T13:03:19.9060720Z 
+2026-07-25T13:03:19.9060720Z
 2026-07-25T13:03:19.9062006Z #6 [2/2] COPY entrypoint.sh /bin/entrypoint.sh
 2026-07-25T13:03:19.9062902Z #6 DONE 0.0s
-2026-07-25T13:03:19.9063155Z 
+2026-07-25T13:03:19.9063155Z
 2026-07-25T13:03:19.9063297Z #7 exporting to image
 2026-07-25T13:03:19.9063620Z #7 exporting layers
 2026-07-25T13:03:20.0079246Z #7 exporting layers 0.3s done
@@ -91,8 +91,8 @@
 2026-07-25T13:03:20.0603291Z   timeout: 45s
 2026-07-25T13:03:20.0603586Z   command_timeout: 10m
 2026-07-25T13:03:20.0607220Z   script: # 1. Create project folder if not exists
-mkdir -p ~/pickleyard
-cd ~/pickleyard
+mkdir -p ~/south-rally
+cd ~/south-rally
 
 # 2. Write docker-compose.yml file
 cat << 'EOF' > docker-compose.yml
@@ -100,8 +100,8 @@ version: '3.8'
 
 services:
   web:
-    image: ghcr.io/eisendev/pickleyard:latest
-    container_name: pickleyard-web
+    image: ghcr.io/eisendev/south-rally:latest
+    container_name: south-rally-web
     restart: always
     ports:
       - "3000:3000"
@@ -111,7 +111,7 @@ services:
       AUTH_SECRET: ${AUTH_SECRET}
       AUTH_TRUST_HOST: ${AUTH_TRUST_HOST:-true}
       AUTH_URL: ${AUTH_URL}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://pickleyard.zeraynce.com}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://south-rally.zeraynce.com}
       PAYMONGO_SECRET_KEY: ${PAYMONGO_SECRET_KEY}
       PAYMONGO_WEBHOOK_SECRET: ${PAYMONGO_WEBHOOK_SECRET}
       AUTH_GOOGLE_ID: ${AUTH_GOOGLE_ID}
@@ -143,22 +143,22 @@ docker compose exec -T web npx prisma@5.22.0 db push --skip-generate --accept-da
 2026-07-25T13:03:20.0612236Z   proxy_timeout: 30s
 2026-07-25T13:03:20.0612952Z env:
 2026-07-25T13:03:20.0613220Z   REGISTRY: ghcr.io
-2026-07-25T13:03:20.0613550Z   IMAGE_NAME: EisenDev/pickleyard
+2026-07-25T13:03:20.0613550Z   IMAGE_NAME: EisenDev/south-rally
 2026-07-25T13:03:20.0613957Z ##[endgroup]
-2026-07-25T13:03:20.0734206Z ##[command]/usr/bin/docker run --name e154947a92d03b2ca74f3ea31fbf239909be61_614dee --label e15494 --workdir /github/workspace --rm -e "REGISTRY" -e "IMAGE_NAME" -e "INPUT_HOST" -e "INPUT_USERNAME" -e "INPUT_KEY" -e "INPUT_TIMEOUT" -e "INPUT_COMMAND_TIMEOUT" -e "INPUT_SCRIPT" -e "INPUT_PORT" -e "INPUT_PASSPHRASE" -e "INPUT_PASSWORD" -e "INPUT_SYNC" -e "INPUT_USE_INSECURE_CIPHER" -e "INPUT_CIPHER" -e "INPUT_KEY_PATH" -e "INPUT_FINGERPRINT" -e "INPUT_PROXY_HOST" -e "INPUT_PROXY_PORT" -e "INPUT_PROXY_USERNAME" -e "INPUT_PROXY_PASSWORD" -e "INPUT_PROXY_PASSPHRASE" -e "INPUT_PROXY_TIMEOUT" -e "INPUT_PROXY_KEY" -e "INPUT_PROXY_KEY_PATH" -e "INPUT_PROXY_FINGERPRINT" -e "INPUT_PROXY_CIPHER" -e "INPUT_PROXY_USE_INSECURE_CIPHER" -e "INPUT_SCRIPT_STOP" -e "INPUT_ENVS" -e "INPUT_ENVS_FORMAT" -e "INPUT_DEBUG" -e "INPUT_ALLENVS" -e "INPUT_REQUEST_PTY" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "GITHUB_ARTIFACTS" -e "GITHUB_ARTIFACTS_LIST" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e "ACTIONS_ORCHESTRATION_ID" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/pickleyard/pickleyard":"/github/workspace" e15494:7a92d03b2ca74f3ea31fbf239909be61
+2026-07-25T13:03:20.0734206Z ##[command]/usr/bin/docker run --name e154947a92d03b2ca74f3ea31fbf239909be61_614dee --label e15494 --workdir /github/workspace --rm -e "REGISTRY" -e "IMAGE_NAME" -e "INPUT_HOST" -e "INPUT_USERNAME" -e "INPUT_KEY" -e "INPUT_TIMEOUT" -e "INPUT_COMMAND_TIMEOUT" -e "INPUT_SCRIPT" -e "INPUT_PORT" -e "INPUT_PASSPHRASE" -e "INPUT_PASSWORD" -e "INPUT_SYNC" -e "INPUT_USE_INSECURE_CIPHER" -e "INPUT_CIPHER" -e "INPUT_KEY_PATH" -e "INPUT_FINGERPRINT" -e "INPUT_PROXY_HOST" -e "INPUT_PROXY_PORT" -e "INPUT_PROXY_USERNAME" -e "INPUT_PROXY_PASSWORD" -e "INPUT_PROXY_PASSPHRASE" -e "INPUT_PROXY_TIMEOUT" -e "INPUT_PROXY_KEY" -e "INPUT_PROXY_KEY_PATH" -e "INPUT_PROXY_FINGERPRINT" -e "INPUT_PROXY_CIPHER" -e "INPUT_PROXY_USE_INSECURE_CIPHER" -e "INPUT_SCRIPT_STOP" -e "INPUT_ENVS" -e "INPUT_ENVS_FORMAT" -e "INPUT_DEBUG" -e "INPUT_ALLENVS" -e "INPUT_REQUEST_PTY" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "GITHUB_ARTIFACTS" -e "GITHUB_ARTIFACTS_LIST" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e "ACTIONS_ORCHESTRATION_ID" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/south-rally/south-rally":"/github/workspace" e15494:7a92d03b2ca74f3ea31fbf239909be61
 2026-07-25T13:03:20.2275078Z ======CMD======
 2026-07-25T13:03:20.2275500Z # 1. Create project folder if not exists
-2026-07-25T13:03:20.2276088Z mkdir -p ~/pickleyard
-2026-07-25T13:03:20.2276441Z cd ~/pickleyard
-2026-07-25T13:03:20.2276643Z 
+2026-07-25T13:03:20.2276088Z mkdir -p ~/south-rally
+2026-07-25T13:03:20.2276441Z cd ~/south-rally
+2026-07-25T13:03:20.2276643Z
 2026-07-25T13:03:20.2276781Z # 2. Write docker-compose.yml file
 2026-07-25T13:03:20.2277151Z cat << 'EOF' > docker-compose.yml
 2026-07-25T13:03:20.2277608Z version: '3.8'
-2026-07-25T13:03:20.2277803Z 
+2026-07-25T13:03:20.2277803Z
 2026-07-25T13:03:20.2277939Z services:
 2026-07-25T13:03:20.2278212Z   web:
-2026-07-25T13:03:20.2278557Z     image: ghcr.io/eisendev/pickleyard:latest
-2026-07-25T13:03:20.2278993Z     container_name: pickleyard-web
+2026-07-25T13:03:20.2278557Z     image: ghcr.io/eisendev/south-rally:latest
+2026-07-25T13:03:20.2278993Z     container_name: south-rally-web
 2026-07-25T13:03:20.2279327Z     restart: always
 2026-07-25T13:03:20.2279650Z     ports:
 2026-07-25T13:03:20.2279953Z       - "3000:3000"
@@ -168,7 +168,7 @@ docker compose exec -T web npx prisma@5.22.0 db push --skip-generate --accept-da
 2026-07-25T13:03:20.2281603Z       AUTH_SECRET: ${AUTH_SECRET}
 2026-07-25T13:03:20.2281981Z       AUTH_TRUST_HOST: ${AUTH_TRUST_HOST:-true}
 2026-07-25T13:03:20.2282598Z       AUTH_URL: ${AUTH_URL}
-2026-07-25T13:03:20.2283051Z       NEXTAUTH_URL: ${NEXTAUTH_URL:-https://pickleyard.zeraynce.com}
+2026-07-25T13:03:20.2283051Z       NEXTAUTH_URL: ${NEXTAUTH_URL:-https://south-rally.zeraynce.com}
 2026-07-25T13:03:20.2283512Z       PAYMONGO_SECRET_KEY: ${PAYMONGO_SECRET_KEY}
 2026-07-25T13:03:20.2283934Z       PAYMONGO_WEBHOOK_SECRET: ${PAYMONGO_WEBHOOK_SECRET}
 2026-07-25T13:03:20.2284364Z       AUTH_GOOGLE_ID: ${AUTH_GOOGLE_ID}
@@ -183,39 +183,39 @@ docker compose exec -T web npx prisma@5.22.0 db push --skip-generate --accept-da
 2026-07-25T13:03:20.2287516Z         limits:
 2026-07-25T13:03:20.2287846Z           memory: 1024M
 2026-07-25T13:03:20.2288233Z EOF
-2026-07-25T13:03:20.2288362Z 
+2026-07-25T13:03:20.2288362Z
 2026-07-25T13:03:20.2288575Z # 3. Log in to GitHub Package Registry on the target server
 2026-07-25T13:03:20.2289453Z echo "***" | docker login ghcr.io -u EisenDev --password-stdin
-2026-07-25T13:03:20.2289721Z 
+2026-07-25T13:03:20.2289721Z
 2026-07-25T13:03:20.2289887Z # 4. Pull, recreate, and run container
 2026-07-25T13:03:20.2290263Z docker compose pull
 2026-07-25T13:03:20.2290545Z docker compose down
 2026-07-25T13:03:20.2290872Z docker compose up -d
-2026-07-25T13:03:20.2291062Z 
+2026-07-25T13:03:20.2291062Z
 2026-07-25T13:03:20.2291221Z # 5. Apply database schemas
 2026-07-25T13:03:20.2292100Z docker compose exec -T web npx prisma@5.22.0 db push --skip-generate --accept-data-loss
-2026-07-25T13:03:20.2292448Z 
+2026-07-25T13:03:20.2292448Z
 2026-07-25T13:03:20.2292586Z ======END======
 2026-07-25T13:03:24.4648165Z err: Error response from daemon: Get "https://ghcr.io/v2/": denied: denied
-2026-07-25T13:03:24.5917616Z err: time="2026-07-25T13:03:24Z" level=warning msg="/root/pickleyard/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
-2026-07-25T13:03:24.6643148Z err:  Image ghcr.io/eisendev/pickleyard:latest Pulling 
-2026-07-25T13:03:25.5094612Z err:  Image ghcr.io/eisendev/pickleyard:latest Error error from registry: denied
+2026-07-25T13:03:24.5917616Z err: time="2026-07-25T13:03:24Z" level=warning msg="/root/south-rally/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+2026-07-25T13:03:24.6643148Z err:  Image ghcr.io/eisendev/south-rally:latest Pulling
+2026-07-25T13:03:25.5094612Z err:  Image ghcr.io/eisendev/south-rally:latest Error error from registry: denied
 2026-07-25T13:03:25.5102600Z err: Error response from daemon: error from registry: denied
-2026-07-25T13:03:25.6379732Z err: time="2026-07-25T13:03:25Z" level=warning msg="/root/pickleyard/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
-2026-07-25T13:03:25.6675147Z err:  Container pickleyard-web Stopping 
-2026-07-25T13:03:26.0220214Z err:  Container pickleyard-web Stopped 
-2026-07-25T13:03:26.0221649Z err:  Container pickleyard-web Removing 
-2026-07-25T13:03:26.2182274Z err:  Container pickleyard-web Removed 
-2026-07-25T13:03:26.2220452Z err:  Network pickleyard_default Removing 
-2026-07-25T13:03:26.3829198Z err:  Network pickleyard_default Removed 
-2026-07-25T13:03:26.5163044Z err: time="2026-07-25T13:03:26Z" level=warning msg="/root/pickleyard/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
-2026-07-25T13:03:26.6090188Z err:  Network pickleyard_default Creating 
-2026-07-25T13:03:26.7209783Z err:  Network pickleyard_default Created 
-2026-07-25T13:03:26.7244735Z err:  Container pickleyard-web Creating 
-2026-07-25T13:03:26.8563832Z err:  Container pickleyard-web Created 
-2026-07-25T13:03:26.8767741Z err:  Container pickleyard-web Starting 
-2026-07-25T13:03:27.2648798Z err:  Container pickleyard-web Started 
-2026-07-25T13:03:27.5401906Z err: time="2026-07-25T13:03:27Z" level=warning msg="/root/pickleyard/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+2026-07-25T13:03:25.6379732Z err: time="2026-07-25T13:03:25Z" level=warning msg="/root/south-rally/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+2026-07-25T13:03:25.6675147Z err:  Container south-rally-web Stopping
+2026-07-25T13:03:26.0220214Z err:  Container south-rally-web Stopped
+2026-07-25T13:03:26.0221649Z err:  Container south-rally-web Removing
+2026-07-25T13:03:26.2182274Z err:  Container south-rally-web Removed
+2026-07-25T13:03:26.2220452Z err:  Network south-rally_default Removing
+2026-07-25T13:03:26.3829198Z err:  Network south-rally_default Removed
+2026-07-25T13:03:26.5163044Z err: time="2026-07-25T13:03:26Z" level=warning msg="/root/south-rally/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+2026-07-25T13:03:26.6090188Z err:  Network south-rally_default Creating
+2026-07-25T13:03:26.7209783Z err:  Network south-rally_default Created
+2026-07-25T13:03:26.7244735Z err:  Container south-rally-web Creating
+2026-07-25T13:03:26.8563832Z err:  Container south-rally-web Created
+2026-07-25T13:03:26.8767741Z err:  Container south-rally-web Starting
+2026-07-25T13:03:27.2648798Z err:  Container south-rally-web Started
+2026-07-25T13:03:27.5401906Z err: time="2026-07-25T13:03:27Z" level=warning msg="/root/south-rally/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
 2026-07-25T13:03:34.5221567Z err: npm warn exec The following package was not found and will be installed: prisma@5.22.0
 2026-07-25T13:03:52.4660219Z out: Prisma schema loaded from prisma/schema.prisma
 2026-07-25T13:03:52.5076966Z out: Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-1-ap-south-1.pooler.supabase.com:5432"

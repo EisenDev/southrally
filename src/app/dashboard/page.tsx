@@ -393,7 +393,7 @@ export default async function DashboardPage() {
               <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px', background: 'var(--color-surface)', borderRadius: 'var(--radius-md)' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-accent)' }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-primary)' }}>PaddleYard Summer Open</div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-primary)' }}>South Rally Social Open</div>
                   <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>Clinics & Social Mixers</div>
                 </div>
               </div>

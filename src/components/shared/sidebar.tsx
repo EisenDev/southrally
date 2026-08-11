@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -14,13 +15,10 @@ import {
   QrCode,
   Users,
   Wallet,
-  LogOut,
   ShieldCheck,
   Star,
-  Gift,
   BarChart3
 } from 'lucide-react'
-import { signOut } from 'next-auth/react'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -28,7 +26,7 @@ const navItems = [
   { href: '/dashboard/paddlestack', label: 'Paddle Stack', icon: Layers },
   { href: '/dashboard/bookings', label: 'My Bookings', icon: Calendar },
   { href: '/dashboard/events', label: 'Events', icon: Award },
-  { href: '/dashboard/yard-points', label: 'Yard Points', icon: Star },
+  { href: '/dashboard/yard-points', label: 'Rally Points', icon: Star },
   { href: '/dashboard/ledger', label: 'Ledger', icon: CreditCard },
   { href: '/dashboard/topup', label: 'Top Up', icon: Wallet },
   { href: '/dashboard/profile', label: 'Profile', icon: User },
@@ -48,10 +46,6 @@ const adminNavItems = [
   { href: '/dashboard/admin/settings', label: 'Time & Cost Control', icon: Settings },
 ]
 
-
-const bottomItems = [
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
-]
 
 interface SidebarProps {
   user?: {
@@ -100,7 +94,9 @@ export function Sidebar({ user, isOpen }: SidebarProps) {
           flexShrink: 0,
         }}
       >
-        <img src="/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+        <span className="dashboard-brand-crest">
+          <Image src="/south-rally-logo.png" alt="South Rally crest" width={42} height={44} unoptimized />
+        </span>
         <span
           style={{
             fontSize: 15,
@@ -109,7 +105,7 @@ export function Sidebar({ user, isOpen }: SidebarProps) {
             letterSpacing: '-0.01em',
           }}
         >
-          PaddleYard
+          South Rally
         </span>
       </div>
 

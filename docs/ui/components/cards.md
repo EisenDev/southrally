@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-Cards are the fundamental grid containers for PaddleYard v2. They organize complex member booking statistics, court status schedules, transactions, and live queue timelines into structured blocks. They float above the cool slate environment background with subtle elevations.
+Cards are the fundamental grid containers for South Rally. They organize complex member booking statistics, court status schedules, transactions, and live queue timelines into structured blocks. They float above the cool slate environment background with subtle elevations.
 
 ---
 

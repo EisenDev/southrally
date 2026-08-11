@@ -4,7 +4,7 @@
 > **Last Updated:** 2026-07-16
 > **Status:** Active — Source of Truth
 
-This is the single source of truth for every design token used in PaddleYard v2. All tokens are defined here as CSS custom properties and referenced in Tailwind CSS configs.
+This is the single source of truth for every design token used in South Rally. All tokens are defined here as CSS custom properties and referenced in Tailwind CSS configs.
 
 ---
 

@@ -98,7 +98,7 @@ export function YardPointsClient({ userName, yardPoints, lifetimeYardPoints, log
     setActiveLoadingId(null)
     if (res.success) {
       setClaimedToday(true)
-      showNotice(true, '🎉 Daily check-in claimed! +2 Yard Points added.')
+      showNotice(true, '🎉 Daily check-in claimed! +2 Rally Points added.')
       router.refresh()
     } else {
       showNotice(false, res.error || 'Could not claim daily reward.')
@@ -170,7 +170,7 @@ export function YardPointsClient({ userName, yardPoints, lifetimeYardPoints, log
               <span style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-secondary)' }}>YP</span>
             </div>
             <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '6px' }}>
-              {lifetimeYardPoints.toLocaleString()} lifetime Yard Points earned
+              {lifetimeYardPoints.toLocaleString()} lifetime Rally Points earned
             </div>
           </div>
 
@@ -406,7 +406,7 @@ export function YardPointsClient({ userName, yardPoints, lifetimeYardPoints, log
           </div>
           {logs.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-disabled)' }}>
-              <p style={{ margin: 0 }}>No points activity yet. Play a match or top up to earn your first Yard Points!</p>
+              <p style={{ margin: 0 }}>No points activity yet. Play a match or top up to earn your first Rally Points!</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -448,7 +448,7 @@ export function YardPointsClient({ userName, yardPoints, lifetimeYardPoints, log
           {redemptions.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-disabled)' }}>
               <Gift size={36} style={{ margin: '0 auto 12px', opacity: 0.4 }} />
-              <p style={{ margin: 0 }}>No redemptions yet. Head to the Shop tab to use your Yard Points!</p>
+              <p style={{ margin: 0 }}>No redemptions yet. Head to the Shop tab to use your Rally Points!</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>

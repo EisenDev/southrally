@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs'
 import { db } from '@/lib/db'
 import { auth, signIn } from '@/lib/auth'
 import { AuthError } from 'next-auth'
-import { headers } from 'next/headers'
 
 const SignUpSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -25,6 +24,12 @@ const SignInSchema = z.object({
 export type ActionResult<T = void> =
   | { success: true; data?: T }
   | { success: false; error: string }
+
+function getPublicAppUrl() {
+  return (process.env.NEXTAUTH_URL || process.env.AUTH_URL || 'http://localhost:3000')
+    .replace(/\/api\/auth\/?$/, '')
+    .replace(/\/$/, '')
+}
 
 export async function signUpAction(
   formData: FormData,
@@ -105,14 +110,15 @@ async function sendEmailViaResend(to: string, subject: string, html: string) {
 }
 
 async function sendLoginOtpEmail(email: string, code: string) {
+  const brandLogoUrl = `${getPublicAppUrl()}/south-rally-logo.png`
   console.log('\n=============================================')
-  console.log(`[PADDLEYARD LOGIN OTP] Code: ${code} for ${email}`)
+  console.log(`[SOUTH RALLY LOGIN OTP] Code: ${code} for ${email}`)
   console.log('=============================================\n')
 
   const html = `
     <div style="font-family: sans-serif; padding: 24px; max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
       <div style="text-align: center; margin-bottom: 20px;">
-        <img src="https://paddleyrd.com/paddleyard-logo.png" alt="PaddleYard Logo" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
+        <img src="${brandLogoUrl}" alt="South Rally crest" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
       </div>
       <h2 style="color: #007C80; margin-top: 0; margin-bottom: 16px; font-size: 20px; font-weight: 700; text-align: center;">Admin/Staff Verification</h2>
       <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: center;">Please use the following 6-digit verification code to complete your login:</p>
@@ -125,7 +131,7 @@ async function sendLoginOtpEmail(email: string, code: string) {
 
   if (process.env.RESEND_API_KEY) {
     try {
-      await sendEmailViaResend(email, `Your PaddleYard Login Verification Code: ${code}`, html)
+      await sendEmailViaResend(email, `Your South Rally Login Verification Code: ${code}`, html)
       console.log(`[RESEND] Login OTP email successfully dispatched to ${email}`)
       return
     } catch (err) {
@@ -133,35 +139,7 @@ async function sendLoginOtpEmail(email: string, code: string) {
     }
   }
 
-  const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER
-  const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_PASS
-
-  if (smtpUser && smtpPass) {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: smtpUser,
-        pass: smtpPass
-      },
-      connectionTimeout: 4000,
-      greetingTimeout: 4000,
-      socketTimeout: 6000
-    })
-
-    const mailOptions = {
-      from: `"PaddleYard" <${smtpUser}>`,
-      to: email,
-      subject: `Your PaddleYard Login Verification Code: ${code}`,
-      text: `Your PaddleYard verification code is: ${code}. This code is valid for 15 minutes.`,
-      html
-    }
-
-    try {
-      await transporter.sendMail(mailOptions)
-    } catch (err) {
-      console.warn('Failed to send login OTP via SMTP (SMTP port probably blocked):', err)
-    }
-  }
+  console.warn('RESEND_API_KEY is missing. Login OTP delivery is unavailable.')
 }
 
 export async function signInAction(
@@ -233,8 +211,6 @@ export async function signInAction(
   return { success: true }
 }
 
-import nodemailer from 'nodemailer'
-
 export async function sendOtpAction(email: string): Promise<ActionResult> {
   if (!email || !email.includes('@')) {
     return { success: false, error: 'Invalid email address' }
@@ -264,16 +240,16 @@ export async function sendOtpAction(email: string): Promise<ActionResult> {
     })
 
     console.log('\n=============================================')
-    console.log(`[PADDLEYARD SIGNUP OTP] Code: ${code} for ${emailNormalized}`)
+    console.log(`[SOUTH RALLY SIGNUP OTP] Code: ${code} for ${emailNormalized}`)
     console.log('=============================================\n')
 
     const htmlContent = `
       <div style="font-family: sans-serif; padding: 24px; max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
         <div style="text-align: center; margin-bottom: 20px;">
-          <img src="https://paddleyrd.com/paddleyard-logo.png" alt="PaddleYard Logo" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
+          <img src="${getPublicAppUrl()}/south-rally-logo.png" alt="South Rally crest" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
         </div>
         <h2 style="color: #007C80; margin-top: 0; margin-bottom: 16px; font-size: 20px; font-weight: 700; text-align: center;">Verify your email address</h2>
-        <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: center;">Welcome to PaddleYard! Please verify your email by entering the 6-digit code below on the signup page:</p>
+        <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: center;">Welcome to South Rally! Please verify your email by entering the 6-digit code below on the signup page:</p>
         <div style="font-size: 32px; font-weight: bold; letter-spacing: 6px; padding: 16px; background: #f0fdfa; color: #007C80; text-align: center; border-radius: 8px; margin: 24px 0; border: 1px solid #ccfbf1; font-family: monospace;">
           ${code}
         </div>
@@ -283,44 +259,13 @@ export async function sendOtpAction(email: string): Promise<ActionResult> {
 
     if (process.env.RESEND_API_KEY) {
       // Send email in the background without holding up the user response!
-      sendEmailViaResend(emailNormalized, `Your PaddleYard Verification Code: ${code}`, htmlContent).then(() => {
+      sendEmailViaResend(emailNormalized, `Your South Rally Verification Code: ${code}`, htmlContent).then(() => {
         console.log(`[RESEND] Signup OTP email sent successfully to ${emailNormalized}`)
       }).catch(err => {
         console.warn('Background signup OTP send failed via Resend:', err)
       })
     } else {
-      const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER
-      const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_PASS
-
-      if (smtpUser && smtpPass) {
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: smtpUser,
-            pass: smtpPass
-          },
-          connectionTimeout: 4000,
-          greetingTimeout: 4000,
-          socketTimeout: 6000
-        })
-
-        const mailOptions = {
-          from: `"PaddleYard" <${smtpUser}>`,
-          to: emailNormalized,
-          subject: `Your PaddleYard Verification Code: ${code}`,
-          text: `Your PaddleYard verification code is: ${code}. This code is valid for 15 minutes.`,
-          html: htmlContent
-        }
-
-        // Send email in the background without holding up the user response!
-        transporter.sendMail(mailOptions).then(() => {
-          console.log(`Signup OTP email sent successfully to ${emailNormalized}`)
-        }).catch(err => {
-          console.warn('Background signup OTP send failed (SMTP port probably blocked):', err)
-        })
-      } else {
-        console.warn('SMTP credentials missing. Skipped sending email, printed code in logs.')
-      }
+      console.warn('RESEND_API_KEY is missing. Signup OTP delivery is unavailable.')
     }
 
     return { success: true }
@@ -352,10 +297,12 @@ export async function signUpWithOtpAction(
   }
 
   const { name, email, password } = parsed.data
+  const emailNormalized = email.toLowerCase().trim()
+  const codeNormalized = code.trim()
 
   try {
     const tokenRecord = await db.verificationToken.findFirst({
-      where: { identifier: email, token: code }
+      where: { identifier: emailNormalized, token: codeNormalized }
     })
 
     if (!tokenRecord) {
@@ -368,10 +315,10 @@ export async function signUpWithOtpAction(
 
     await db.$transaction(async (tx) => {
       await tx.verificationToken.deleteMany({
-        where: { identifier: email, token: code }
+        where: { identifier: emailNormalized, token: codeNormalized }
       })
 
-      const existingUser = await tx.user.findUnique({ where: { email } })
+      const existingUser = await tx.user.findUnique({ where: { email: emailNormalized } })
       if (existingUser) {
         throw new Error('An account with this email already exists.')
       }
@@ -379,14 +326,14 @@ export async function signUpWithOtpAction(
       const hashedPassword = await bcrypt.hash(password, 12)
 
       const newUser = await tx.user.create({
-        data: { name, email, hashedPassword }
+        data: { name, email: emailNormalized, hashedPassword }
       })
 
       await checkAndApplySignupPromo(tx, newUser.id)
     })
 
     try {
-      await signIn('credentials', { email, password, redirectTo: '/dashboard' })
+      await signIn('credentials', { email: emailNormalized, password, redirectTo: '/dashboard' })
     } catch (err) {
       if (err instanceof AuthError) {
         return { success: false, error: 'Account created. Please sign in.' }
@@ -580,17 +527,16 @@ export async function sendPasswordResetAction(email: string): Promise<ActionResu
       }
     })
 
-    const headersList = await headers()
-    const origin = headersList.get('origin') || 'https://paddleyrd.com'
+    const origin = getPublicAppUrl()
     const resetLink = `${origin}/reset-password?token=${token}`
 
     const htmlContent = `
       <div style="font-family: sans-serif; padding: 24px; max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
         <div style="text-align: center; margin-bottom: 20px;">
-          <img src="https://paddleyrd.com/paddleyard-logo.png" alt="PaddleYard Logo" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
+          <img src="${origin}/south-rally-logo.png" alt="South Rally crest" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
         </div>
         <h2 style="color: #007C80; margin-top: 0; margin-bottom: 16px; font-size: 20px; font-weight: 700; text-align: center;">Reset your password</h2>
-        <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: center;">You requested a password reset for your PaddleYard account. Please click the button below to choose a new password:</p>
+        <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: center;">You requested a password reset for your South Rally account. Please click the button below to choose a new password:</p>
         <div style="text-align: center; margin: 24px 0;">
           <a href="${resetLink}" style="background-color: #007C80; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block; box-shadow: 0 4px 6px rgba(0, 124, 128, 0.25);">
             Reset Password
@@ -601,7 +547,7 @@ export async function sendPasswordResetAction(email: string): Promise<ActionResu
     `
 
     if (process.env.RESEND_API_KEY) {
-      await sendEmailViaResend(emailNormalized, 'Reset your PaddleYard password', htmlContent)
+      await sendEmailViaResend(emailNormalized, 'Reset your South Rally password', htmlContent)
       console.log(`[RESEND] Password reset link sent to ${emailNormalized}`)
     } else {
       console.warn('RESEND_API_KEY missing. Password reset link could not be sent.')

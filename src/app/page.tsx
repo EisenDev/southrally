@@ -1,1700 +1,377 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
-import { SignInModal } from '@/components/auth/signin-modal'
+import { useCallback, useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
-  Calendar,
-  CreditCard,
-  Clock,
-  ClipboardCheck,
-  CheckCircle2,
+  ArrowRight,
+  CalendarDays,
+  Check,
+  Clock3,
+  Gift,
   Menu,
-  X,
-  MapPin,
-  ChevronLeft,
-  ChevronRight,
-  Users,
   QrCode,
-  Sparkles,
+  Star,
   Trophy,
-  Award
+  Users,
+  X,
 } from 'lucide-react'
+import { SignInModal } from '@/components/auth/signin-modal'
+import styles from './landing.module.css'
 
-// Isolated component so useSearchParams doesn't block static prerendering of LandingPage
-function OAuthErrorHandler({ onError }: { onError: (msg: string) => void }) {
+type LandingSession = {
+  user?: {
+    name?: string | null
+    email?: string | null
+  }
+}
+
+const experienceCards = [
+  {
+    title: 'Book in Seconds',
+    description: 'See live schedules and reserve without back-and-forth.',
+    icon: CalendarDays,
+    tone: 'purple',
+  },
+  {
+    title: 'Find Your Match',
+    description: 'Join Open Play based on your level and availability.',
+    icon: Users,
+    tone: 'green',
+  },
+  {
+    title: 'Check In Fast',
+    description: 'Use your player QR for smooth court arrivals.',
+    icon: QrCode,
+    tone: 'ivory',
+  },
+  {
+    title: 'Earn Every Rally',
+    description: 'Collect rewards each time you play.',
+    icon: Trophy,
+    tone: 'ivory',
+  },
+] as const
+
+const events = [
+  { category: 'Social Play', title: 'Friday Night Rally', month: 'Aug', day: '21', time: '6:00 PM', tone: 'purple' },
+  { category: 'Learn & Play', title: "Beginner's Mixer", month: 'Aug', day: '24', time: '4:00 PM', tone: 'green' },
+  { category: 'Club Tournament', title: 'South Rally Cup', month: 'Sep', day: '06', time: '8:00 AM', tone: 'ivory' },
+] as const
+
+function OAuthErrorHandler({ onError }: { onError: (message: string) => void }) {
   const searchParams = useSearchParams()
+
   useEffect(() => {
-    const error = searchParams.get('error')
-    if (error === 'OAuthAccountNotLinked') {
-      onError('This email is already registered with a different sign-in method. Please use email & password to log in.')
+    if (searchParams.get('error') === 'OAuthAccountNotLinked') {
+      onError('This email is already registered with a different sign-in method. Please use email and password to sign in.')
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
+  }, [onError, searchParams])
+
   return null
 }
 
+function Brand({ compact = false }: { compact?: boolean }) {
+  return (
+    <span className={styles.brand}>
+      <Image
+        src="/south-rally-logo.png"
+        alt="South Rally crossed pickleball paddles crest"
+        width={compact ? 64 : 88}
+        height={compact ? 64 : 88}
+        className={styles.brandLogo}
+        priority={compact}
+      />
+      <span className={styles.brandLockup}>
+        <span className={styles.brandName}>South Rally</span>
+        <span className={styles.brandRule} aria-hidden="true"><i /></span>
+      </span>
+    </span>
+  )
+}
+
 export default function LandingPage() {
+  const [session, setSession] = useState<LandingSession | null>(null)
   const [isSignInOpen, setIsSignInOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [session, setSession] = useState<any>(null)
   const [authError, setAuthError] = useState<string | null>(null)
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 30)
-    }
-    handleScroll()
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    const controller = new AbortController()
+
+    fetch('/api/auth/session', { signal: controller.signal })
+      .then((response) => response.json() as Promise<LandingSession>)
+      .then((activeSession) => {
+        if (activeSession.user) setSession(activeSession)
+      })
+      .catch(() => undefined)
+
+    return () => controller.abort()
   }, [])
 
   useEffect(() => {
-    fetch('/api/auth/session')
-      .then(res => res.json())
-      .then(data => {
-        if (data && Object.keys(data).length > 0 && data.user) {
-          setSession(data)
-        }
-      })
-      .catch(err => console.error(err))
-
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768)
-    }
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    const updateHeader = () => setScrolled(window.scrollY > 24)
+    updateHeader()
+    window.addEventListener('scroll', updateHeader, { passive: true })
+    return () => window.removeEventListener('scroll', updateHeader)
   }, [])
 
-  const courtsData = [
-    { id: '1', name: 'Court 1', image: '/court_illustration.jpg' },
-    { id: '2', name: 'Court 2', image: '/court_illustration.jpg' },
-    { id: '3', name: 'Court 3', image: '/court_illustration.jpg' },
-    { id: '4', name: 'Court 4', image: '/court_illustration.jpg' },
-    { id: '5', name: 'Court 5', image: '/court_illustration.jpg' },
-    { id: '6', name: 'Court 6', image: '/court_illustration.jpg' },
-    { id: '7', name: 'Court 7', image: '/court_illustration.jpg' },
-    { id: '8', name: 'Court 8', image: '/court_illustration.jpg' },
-    { id: '9', name: 'Court 9', image: '/court_illustration.jpg' },
-    { id: '10', name: 'Court 10', image: '/court_illustration.jpg' }
-  ]
-
-  // Reset index when changing viewport mode
-  useEffect(() => {
-    setActiveIndex(0)
-  }, [isMobile])
-
-  // Auto-slide effect for the courts carousel
-  useEffect(() => {
-    const totalPages = isMobile ? 10 : 3
-    const interval = setInterval(() => {
-      setActiveIndex(prev => {
-        if (prev >= totalPages - 1) return 0
-        return prev + 1
-      })
-    }, 5000) // Slide every 5 seconds
-    return () => clearInterval(interval)
-  }, [isMobile])
-
-  const displayPages = isMobile
-    ? courtsData.map(c => [c])
-    : [
-        courtsData.slice(0, 4),
-        courtsData.slice(4, 8),
-        courtsData.slice(8, 10)
-      ]
-
-  const totalPages = isMobile ? 10 : 3
-  const maxIndex = totalPages - 1
-
-  const handlePrev = () => {
-    setActiveIndex(prev => Math.max(prev - 1, 0))
-  }
-
-  const handleNext = () => {
-    setActiveIndex(prev => Math.min(prev + 1, maxIndex))
-  }
+  const publicSignupHref = '/signup'
+  const closeMobileMenu = () => setMobileMenuOpen(false)
+  const handleOAuthError = useCallback((message: string) => {
+    setAuthError(message)
+    setIsSignInOpen(true)
+  }, [])
 
   return (
-    <div style={{ background: 'var(--color-bg-primary)', minHeight: '100vh', overflowX: 'hidden' }}>
-      {/* Navigation Header */}
-      <header className={`header-container ${scrolled ? 'scrolled' : ''}`}>
-        <div className="header-inner">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <img src="/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: '50%' }} />
-            <span className="logo-text" style={{ fontSize: 20, fontWeight: 800, color: 'inherit', letterSpacing: '-0.02em', paddingLeft: '2px' }}>
-              PaddleYard
-            </span>
-          </div>
+    <div className={styles.page}>
+      <header className={`${styles.header} ${scrolled ? styles.headerScrolled : ''}`}>
+        <div className={styles.headerInner}>
+          <Link href="#top" className={styles.brandLink} aria-label="South Rally home">
+            <Brand compact />
+          </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="desktop-nav">
-            <Link href="#courts" className="nav-link">Courts</Link>
-            <Link href="#features" className="nav-link">Why PaddleYard</Link>
-            <Link href="#how-it-works" className="nav-link">How It Works</Link>
+          <nav className={styles.desktopNav} aria-label="Primary navigation">
+            <Link href="#top">Home</Link>
+            <Link href="#courts">Courts</Link>
+            <Link href="#open-play">Open Play</Link>
+            <Link href="#events">Events</Link>
+            <Link href="#experience">About</Link>
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="desktop-actions">
+          <div className={styles.headerActions}>
             {session ? (
-              <Link href="/dashboard" className="get-started-btn">
-                Go to Dashboard
-              </Link>
+              <Link href="/dashboard" className={styles.lightButton}>Go to Dashboard</Link>
             ) : (
               <>
-                <button
-                  onClick={() => setIsSignInOpen(true)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    fontSize: 14,
-                    color: 'inherit',
-                    cursor: 'pointer',
-                    fontWeight: 650,
-                    transition: 'color var(--duration-fast)'
-                  }}
-                  className="login-btn-link"
-                >
-                  Log in
-                </button>
-                <Link href="/signup" className="get-started-btn">
-                  Book a Court
-                </Link>
+                <button type="button" className={styles.textButton} onClick={() => setIsSignInOpen(true)}>Login</button>
+                <Link href="/signup" className={styles.lightButton}>Book a Court</Link>
               </>
             )}
           </div>
 
-          {/* Mobile Menu Trigger */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="mobile-menu-trigger"
+            type="button"
+            className={styles.menuButton}
+            onClick={() => setMobileMenuOpen((open) => !open)}
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
           </button>
         </div>
-      </header>
 
-      {/* Mobile Drawer Navigation */}
-      {mobileMenuOpen && (
-        <div className="mobile-drawer">
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '24px 0' }}>
-            <Link href="#courts" onClick={() => setMobileMenuOpen(false)} className="nav-link-mobile">Courts</Link>
-            <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="nav-link-mobile">Why PaddleYard</Link>
-            <Link href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="nav-link-mobile">How It Works</Link>
-            <div style={{ height: 1, background: 'var(--color-border)', margin: '10px 0' }} />
+        {mobileMenuOpen && (
+          <nav id="mobile-navigation" className={styles.mobileNav} aria-label="Mobile navigation">
+            <Link href="#top" onClick={closeMobileMenu}>Home</Link>
+            <Link href="#courts" onClick={closeMobileMenu}>Courts</Link>
+            <Link href="#open-play" onClick={closeMobileMenu}>Open Play</Link>
+            <Link href="#events" onClick={closeMobileMenu}>Events</Link>
+            <Link href="#experience" onClick={closeMobileMenu}>About</Link>
             {session ? (
-              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="get-started-btn" style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 44 }}>
-                Go to Dashboard
-              </Link>
+              <Link href="/dashboard" className={styles.mobileBookButton} onClick={closeMobileMenu}>Go to Dashboard</Link>
             ) : (
               <>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    setIsSignInOpen(true)
-                  }}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-lg)',
-                    height: 44,
-                    fontSize: 15,
-                    fontWeight: 600,
-                    color: 'var(--color-text-primary)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Log in
-                </button>
-                <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="get-started-btn" style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 44 }}>
-                  Book a Court
-                </Link>
+                <button type="button" onClick={() => { closeMobileMenu(); setIsSignInOpen(true) }}>Login</button>
+                <Link href="/signup" className={styles.mobileBookButton} onClick={closeMobileMenu}>Book a Court</Link>
               </>
             )}
           </nav>
-        </div>
-      )}
+        )}
+      </header>
 
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-container">
-          {/* Left Hero Content */}
-          <div className="hero-left-content animate-fade-up">
-            <div className="badge-courts">
-              <span className="badge-courts-dot" style={{ background: '#10B981' }} />
-              <span>• INDOOR COURTS. ALL DAY.</span>
+      <main>
+        <section id="top" className={styles.hero} aria-labelledby="hero-title">
+          <div className={styles.heroGlow} aria-hidden="true" />
+          <div className={styles.heroInner}>
+            <div className={styles.heroCopy}>
+              <p className={styles.eyebrow}><span>✦</span> Your court. Your community.</p>
+              <h1 id="hero-title">Rally More.<br />Belong Here.</h1>
+              <p className={styles.heroLead}>Book a court, find your next match, and become part of a pickleball community built for everyone.</p>
+              <div className={styles.heroButtons}>
+                <Link href={publicSignupHref} className={styles.lightButton}>Book a Court</Link>
+                <Link href={publicSignupHref} className={styles.outlineButton}>Explore Open Play</Link>
+              </div>
+              <div className={styles.heroBenefits} aria-label="South Rally benefits">
+                <span><CalendarDays aria-hidden="true" />Easy Booking</span>
+                <span><Users aria-hidden="true" />Open Play</span>
+                <span><Trophy aria-hidden="true" />Member Rewards</span>
+              </div>
             </div>
 
-            <h1 className="hero-title" style={{ fontSize: '56px', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.025em', color: 'white' }}>
-              Less Waiting.<br />
-              <span style={{ color: '#ff9800', borderBottom: '3.5px solid #ff9800', paddingBottom: '2px' }}>More Playing.</span>
-            </h1>
-
-            <p className="hero-subtitle">
-              Premium indoor pickleball courts. Easy booking, real-time queues, and a better way to play.
-            </p>
-
-            <div className="hero-actions" style={{ marginTop: '4px' }}>
-              {session ? (
-                <>
-                  <Link href="/dashboard/bookings" className="get-started-btn hero-cta-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                    <span>Book a Court</span>
-                    <Calendar size={15} />
-                  </Link>
-                  <Link href="/dashboard/bookings" className="sec-btn hero-cta-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                    <span>View Courts</span>
-                    <MapPin size={15} />
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/signup" className="get-started-btn hero-cta-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                    <span>Book a Court</span>
-                    <Calendar size={15} />
-                  </Link>
-                  <button className="sec-btn hero-cta-btn" onClick={() => setIsSignInOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                    <span>View Courts</span>
-                    <MapPin size={15} />
-                  </button>
-                </>
-              )}
+            <div className={styles.heroVisual} aria-label="South Rally court finder preview">
+              <div className={`${styles.paddle} ${styles.paddleLeft}`} aria-hidden="true"><i /></div>
+              <div className={`${styles.paddle} ${styles.paddleRight}`} aria-hidden="true"><i /></div>
+              <div className={styles.pickleball} aria-hidden="true">••<br />•••</div>
+              <div className={styles.finderCard}>
+                <div className={styles.cardHeading}><h2>Find a Court</h2><span>✦</span></div>
+                <label>Date <span><CalendarDays aria-hidden="true" />Today</span></label>
+                <label>Time <span><Clock3 aria-hidden="true" />6:00 PM</span></label>
+                <label>Court <span>▦ Any Court</span></label>
+                <Link href={publicSignupHref} className={styles.purpleButton}>Check Availability</Link>
+              </div>
             </div>
+          </div>
+        </section>
 
-            {/* Bottom row feature tags */}
-            <div className="hero-features-flex" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '28px' }}>
-              {[
-                { label: 'Live Queue', icon: Users },
-                { label: 'QR Check-In', icon: QrCode },
-                { label: 'Smart Assignment', icon: Sparkles },
-                { label: 'Rewards', icon: Trophy },
-                { label: 'Real-Time Booking', icon: Clock }
-              ].map((item, idx) => (
-                <div key={idx} style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: '6px', 
-                  padding: '6px 12px', 
-                  borderRadius: '99px',
-                  background: 'rgba(255, 255, 255, 0.06)', 
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  color: 'white'
-                }}>
-                  <item.icon size={12} style={{ color: '#ff9800' }} />
-                  <span style={{ fontSize: '10.5px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.9)' }}>{item.label}</span>
-                </div>
+        <section id="experience" className={`${styles.section} ${styles.experience}`} aria-labelledby="experience-title">
+          <div className={styles.sectionInner}>
+            <div className={styles.sectionHeading}>
+              <p className={styles.eyebrow}>The South Rally experience</p>
+              <h2 id="experience-title">More than a court.<br />It’s where the rally begins.</h2>
+              <p>Everything you need to play more often, meet the right people, and enjoy every match—without the usual hassle.</p>
+            </div>
+            <div className={styles.experienceGrid}>
+              {experienceCards.map(({ title, description, icon: Icon, tone }) => (
+                <article key={title} className={`${styles.experienceCard} ${styles[tone]}`}>
+                  <Icon aria-hidden="true" />
+                  <span className={styles.cardOrnament} aria-hidden="true">— ◆ —</span>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </article>
               ))}
             </div>
+            <blockquote>“Built for casual games, competitive rallies, and everyone in between.”</blockquote>
           </div>
+        </section>
 
-          {/* Right Hero / Compact court finder card */}
-          <div className="hero-right-visual animate-fade-up">
-            <div className="hero-booking-card">
-              <h2>Find Your Court</h2>
-              <p>Choose when you want to play.</p>
-
-              <div className="hero-booking-tabs" role="group" aria-label="Choose booking day">
-                <button type="button" className="active">Today</button>
-                <button type="button">Tomorrow</button>
-              </div>
-
-              <div className="hero-booking-fields">
-                <div>
-                  <span>Date</span>
-                  <strong><Calendar size={14} />Aug 10</strong>
-                </div>
-                <div>
-                  <span>Time</span>
-                  <strong><Clock size={14} />6:00 PM</strong>
-                </div>
-                <div>
-                  <span>Court</span>
-                  <strong>Any Court</strong>
-                </div>
-              </div>
-
-              <Link href={session ? "/dashboard/bookings" : "/signup"} className="hero-check-availability">
-                Check Availability
-              </Link>
-
-              <span className="hero-booking-note">4 indoor courts • Open daily</span>
+        <section id="courts" className={`${styles.section} ${styles.bookingSection}`} aria-labelledby="courts-title">
+          <div className={`${styles.sectionInner} ${styles.splitSection}`}>
+            <div className={styles.splitCopy}>
+              <p className={styles.eyebrow}>Court booking</p>
+              <h2 id="courts-title">Your next game is only a few taps away.</h2>
+              <p>See real-time availability, choose your schedule, and secure your court instantly.</p>
+              <ul>
+                <li><Check aria-hidden="true" />Live court availability</li>
+                <li><Check aria-hidden="true" />Flexible time slots</li>
+                <li><Check aria-hidden="true" />Instant booking confirmation</li>
+              </ul>
+              <Link href={publicSignupHref} className={styles.outlineButton}>▦ View All Courts</Link>
+            </div>
+            <div className={styles.bookingPreview}>
+              <Image src="/south-rally-logo.png" alt="" width={58} height={58} />
+              <h3>Reserve a Court</h3>
+              <div className={styles.previewTabs}><strong>Today</strong><span>Tomorrow</span><span>This Week</span></div>
+              <div className={styles.previewRow}><span><CalendarDays aria-hidden="true" />Date</span><strong>Aug 14</strong></div>
+              <div className={styles.previewRow}><span><Clock3 aria-hidden="true" />Time</span><strong>6:00 PM</strong></div>
+              <div className={`${styles.previewRow} ${styles.selectedRow}`}><span>▦ Court 1</span><strong>Available ✓</strong></div>
+              <div className={styles.previewRow}><span>▦ Court 2</span><strong>7:00 PM →</strong></div>
+              <Link href={publicSignupHref} className={styles.greenButton}>Continue Booking</Link>
+              <small><Check aria-hidden="true" /> Instant confirmation</small>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Features Grid */}
-      <section id="features" className="features-section">
-        <div className="features-container-grid">
-          {[
-            {
-              title: 'Real-time Availability',
-              desc: 'See open courts in real-time and book instantly.',
-              icon: Calendar
-            },
-            {
-              title: 'Easy & Secure Payments',
-              desc: 'Pay safely and securely through PayMongo.',
-              icon: CreditCard
-            },
-            {
-              title: 'Indoor Premium Courts',
-              desc: 'High-quality indoor courts built for the best experience.',
-              icon: Clock
-            },
-            {
-              title: 'Manage Bookings',
-              desc: 'View, reschedule, or cancel your bookings anytime.',
-              icon: ClipboardCheck
-            }
-          ].map((f, i) => {
-            const Icon = f.icon
-            return (
-              <div key={i} className="feature-item-card">
-                <div className="feature-icon-wrapper">
-                  <Icon size={20} />
-                </div>
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>
-                  {f.title}
-                </h3>
-                <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
-                  {f.desc}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* ── System Ecosystem Section ── */}
-      <section id="ecosystem" className="ecosystem-section" style={{ borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 48px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              The PaddleYard Ecosystem
-            </span>
-            <h2 style={{ fontSize: '36px', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', marginTop: '8px', margin: '8px 0 0' }}>
-              A Unified Pickleball Experience
-            </h2>
-            <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', marginTop: '12px', maxWidth: '600px', margin: '12px auto 0', lineHeight: 1.6 }}>
-              Our platform bridges front desk kiosk checking, live open play queues, private bookings, and point ledgers in one seamless application.
-            </p>
+        <section id="open-play" className={`${styles.section} ${styles.openPlay}`} aria-labelledby="open-play-title">
+          <div className={`${styles.sectionInner} ${styles.splitSection}`}>
+            <div className={styles.splitCopy}>
+              <p className={styles.eyebrow}>⚜ Open play</p>
+              <h2 id="open-play-title">Show up solo.<br />Leave with a game.</h2>
+              <p>Choose your level and schedule. We’ll place you with players ready to rally.</p>
+              <Link href={publicSignupHref} className={styles.purpleButton}>Join Open Play</Link>
+              <small>No group chat. No awkward waiting. Just play.</small>
+            </div>
+            <div className={styles.matchCard}>
+              <Image src="/south-rally-logo.png" alt="" width={54} height={54} />
+              <h3>Find My Match</h3>
+              <div className={styles.skillTabs}><span>Beginner</span><strong>Intermediate</strong><span>Advanced</span></div>
+              <div className={styles.matchInfo}><Clock3 aria-hidden="true" /><span>Preferred Time<strong>Tonight, 6:00 PM</strong></span></div>
+              <div className={styles.matchInfo}><Users aria-hidden="true" /><span>Players Needed<strong>2 more</strong></span></div>
+              <div className={styles.playerDots} aria-label="Four player places"><i /><i /><i /><i /></div>
+              <Link href={publicSignupHref} className={styles.greenButton}>Join the Queue</Link>
+              <small>● Matching players near your level</small>
+            </div>
           </div>
+        </section>
 
-          <div className="ecosystem-grid">
-            {[
-              {
-                title: '📅 Court Reservation Hub',
-                desc: 'Browse court layouts and book single or multi-hour sessions with instant credit sync. Calculates member rates, VIP perks, and court type fees dynamically.',
-                pill: 'Bookings & Scheduling'
-              },
-               {
-                 title: '⚡ Paddle Stack Matchmaker',
-                 desc: 'Our collaborative open-play rotation engine. Just scan at the lobby, choose your skill bracket, and let the system handle match rotations and queue timers.',
-                 pill: 'Lobby Open Play Queue'
-               },
-              {
-                title: '📱 Lobby Kiosk & Check-in',
-                desc: 'Quick kiosk scan functionality. Players check in at the court lobby using their digital pass QR code. Automatically verifies accounts and enters active play pools.',
-                pill: 'Self-Serve Kiosks'
-              },
-              {
-                title: '💸 Credit Balance Ledger',
-                desc: 'Top up securely using GCash, Maya, or cash over the counter. Check past bookings and debits in a live transaction ledger that updates in real-time.',
-                pill: 'Secure PayMongo Wallet'
-              }
-            ].map((eco, idx) => (
-              <div key={idx} className="ecosystem-card">
-                <span className="ecosystem-badge">{eco.pill}</span>
-                <h3 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--color-text-primary)', margin: '16px 0 8px' }}>{eco.title}</h3>
-                <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>{eco.desc}</p>
+        <section id="membership" className={`${styles.section} ${styles.membership}`} aria-labelledby="membership-title">
+          <div className={styles.sectionInner}>
+            <div className={styles.sectionHeading}>
+              <p className={styles.eyebrow}>Membership & rewards</p>
+              <h2 id="membership-title">Every rally counts.</h2>
+              <p>Check in with one player QR, earn points whenever you play, and unlock club rewards along the way.</p>
+            </div>
+            <div className={styles.membershipGrid}>
+              <div className={styles.memberPass}>
+                <div className={styles.passTop}><Image src="/south-rally-logo.png" alt="South Rally member crest" width={132} height={132} /><div><strong>Alex Rivera</strong><span>Rally Member</span></div></div>
+                <div className={styles.passBottom}><span>South Rally</span><div className={styles.fakeQr} aria-label="Member QR code preview">▦<br />▤</div><small>Member no.<br /><strong>SR-0248</strong></small></div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── YP Rewards Sneakpeek Section ── */}
-      <section id="rewards" className="rewards-section" style={{ background: 'var(--color-bg-primary)', padding: '80px 0', borderBottom: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 48px' }} className="rewards-container">
-          {/* Left Text */}
-          <div className="rewards-left">
-            <span style={{ fontSize: '12px', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              🎁 Yard Points (YP) Rewards System
-            </span>
-            <h2 style={{ fontSize: '36px', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', marginTop: '8px', margin: '8px 0 0', lineHeight: 1.15 }}>
-              Play More. Win More.<br />Get Rewarded.
-            </h2>
-            <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: '16px 0 24px', fontWeight: 500 }}>
-              Earn Yard Points automatically every time you step on a court! YP values scale based on your skill rating and match outcomes, which you can redeem for premium club awards.
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {[
-                { title: '🎮 Play and Earn', desc: 'All open play matches award points. Winners get full points (up to 65 YP for Advanced), while losers earn a 15% participation share.' },
-                { title: '⚖️ Skill Level Multipliers', desc: 'Points scale automatically to reward performance across brackets: Advanced (65 YP), Intermediate (50 YP), and Novice (35 YP).' },
-                { title: '🛍️ Premium Rewards Catalog', desc: 'Turn your YP balance into free court bookings, VIP memberships, custom paddles, grips, drinks, or tournament passes.' }
-              ].map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800, flexShrink: 0, marginTop: '2px' }}>✓</div>
-                  <div>
-                    <h4 style={{ fontSize: '14px', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>{item.title}</h4>
-                    <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', margin: '4px 0 0', lineHeight: 1.4 }}>{item.desc}</p>
-                  </div>
+              <div className={styles.progressCard}>
+                <h3><Trophy aria-hidden="true" /> Your Rally Progress</h3>
+                <p>Court Regular</p>
+                <strong className={styles.points}>1,240 <small>points</small></strong>
+                <div className={styles.progressTrack}><i /></div>
+                <span>760 pts to Club Ace</span>
+                <div className={styles.rewardGrid}>
+                  <div><Clock3 aria-hidden="true" /><strong>Free Court Hour</strong><span>2,000 pts</span></div>
+                  <div><Users aria-hidden="true" /><strong>Guest Pass</strong><span>3,500 pts</span></div>
+                  <div><CalendarDays aria-hidden="true" /><strong>Priority Booking</strong><span>5,000 pts</span></div>
                 </div>
+                <Link href={publicSignupHref} className={styles.outlineDarkButton}>View Rewards <ArrowRight aria-hidden="true" /></Link>
+              </div>
+            </div>
+            <div className={styles.rewardBenefits}>
+              <span><QrCode aria-hidden="true" /><strong>One QR Check-In</strong><small>Fast, simple, one scan to play.</small></span>
+              <span><Star aria-hidden="true" /><strong>Points Every Game</strong><small>Earn every time you step on court.</small></span>
+              <span><Gift aria-hidden="true" /><strong>Member-Only Perks</strong><small>Exclusive rewards just for you.</small></span>
+            </div>
+          </div>
+        </section>
+
+        <section id="events" className={`${styles.section} ${styles.events}`} aria-labelledby="events-title">
+          <div className={styles.sectionInner}>
+            <div className={styles.eventsHeading}>
+              <div><p className={styles.eyebrow}>✦ Events & community</p><h2 id="events-title">There’s always another rally.</h2><p>From relaxed social games to competitive club nights, there’s a place for every kind of player.</p></div>
+              <Link href={publicSignupHref} className={styles.outlineDarkButton}>View All Events <ArrowRight aria-hidden="true" /></Link>
+            </div>
+            <div className={styles.eventGrid}>
+              {events.map((event) => (
+                <article key={event.title} className={`${styles.eventCard} ${styles[event.tone]}`}>
+                  <span>{event.category}</span>
+                  <div className={styles.eventBall} aria-hidden="true">•••</div>
+                  <h3>{event.title}</h3>
+                  <div className={styles.eventMeta}><strong>{event.month}<b>{event.day}</b></strong><i /><strong>{event.time}</strong></div>
+                  <div className={styles.courtLines} aria-hidden="true" />
+                  <Link href={publicSignupHref}>Reserve Spot <ArrowRight aria-hidden="true" /></Link>
+                </article>
               ))}
             </div>
+            <div className={styles.communityNote}><span>✦ Good games bring people together.</span><span>Join 100+ local players ✦</span></div>
           </div>
+        </section>
 
-          {/* Right Visual (Interactive Rewards Catalog Widget Mockup) */}
-          <div className="rewards-right">
-            <div className="rewards-mock-card">
-              {/* Card Header: YP Balance */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '16px', marginBottom: '16px' }}>
-                <div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 700 }}>MY YARD POINTS</div>
-                  <div style={{ fontSize: '28px', fontWeight: 800, color: 'var(--color-primary)', marginTop: '2px' }}>2,450 YP</div>
-                </div>
-                <div style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)', padding: '6px 12px', borderRadius: 'var(--radius-full)', fontSize: '11px', fontWeight: 800 }}>
-                  PRO RANK
-                </div>
-              </div>
-
-              {/* Progress Goal */}
-              <div style={{ marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
-                  <span>Next Goal: Free Court Booking</span>
-                  <span>2,450 / 3,000 YP</span>
-                </div>
-                <div style={{ height: '8px', background: 'var(--color-border)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-                  <div style={{ width: '81.6%', height: '100%', background: 'linear-gradient(90deg, var(--color-primary), #10b981)', borderRadius: 'var(--radius-full)' }} />
-                </div>
-              </div>
-
-              {/* Catalog Items list */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-text-disabled)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  Unlocking Soon
-                </div>
-                {[
-                  { name: '1-Hour Private Court booking', cost: '1,000 YP', status: 'UNLOCKED', bg: '#ecfdf5', text: '#10b981' },
-                  { name: 'PaddleYard Premium Paddle Grip', cost: '350 YP', status: 'UNLOCKED', bg: '#ecfdf5', text: '#10b981' },
-                  { name: 'Free VIP Day Membership Pass', cost: '3,000 YP', status: '81% UNLOCKED', bg: 'var(--color-surface)', text: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }
-                ].map((item, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderRadius: 'var(--radius-md)', background: item.status === 'UNLOCKED' ? 'var(--color-surface)' : 'rgba(0,0,0,0.01)', border: item.border || '1px solid var(--color-border)' }}>
-                    <div>
-                      <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--color-text-primary)' }}>{item.name}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginTop: '2px', fontWeight: 650 }}>Cost: {item.cost}</div>
-                    </div>
-                    <span style={{ fontSize: '10px', fontWeight: 850, padding: '4px 8px', borderRadius: 'var(--radius-sm)', background: item.bg, color: item.text }}>
-                      {item.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
+        <section id="join" className={styles.joinSection} aria-labelledby="join-title">
+          <div className={styles.joinInner}>
+            <h2 id="join-title">Ready to join the rally?</h2>
+            <div className={styles.joinOrnament} aria-hidden="true">—— ⚜ ——</div>
+            <p>Your next court, match, and community are waiting.</p>
+            <div className={styles.heroButtons}>
+              <Link href={publicSignupHref} className={styles.lightButton}>Book a Court <ArrowRight aria-hidden="true" /></Link>
+              <Link href={publicSignupHref} className={styles.outlineButton}>Create an Account <ArrowRight aria-hidden="true" /></Link>
             </div>
+            <div className={styles.joinFeatures}><span>Real-Time Booking</span><i /> <span>Open Play Matching</span><i /> <span>Member Rewards</span><i /> <span>QR Check-In</span></div>
           </div>
+        </section>
+      </main>
+
+      <footer className={styles.footer}>
+        <div className={styles.footerGrid}>
+          <div className={styles.footerBrand}><Brand /><p>Play often. <strong>Rally together.</strong></p></div>
+          <nav aria-label="Play links"><h2>Play</h2><Link href="#courts">Courts</Link><Link href="#open-play">Open Play</Link><Link href="#events">Events</Link></nav>
+          <nav aria-label="Club links"><h2>Club</h2><Link href="#experience">About</Link><Link href="#membership">Membership</Link><a href="mailto:hello@southrally.example">Contact</a></nav>
+          <nav aria-label="Support links"><h2>Support</h2><a href="#">Help Center</a><a href="#">Terms</a><a href="#">Privacy</a></nav>
+          <div className={styles.socials}><a href="#" aria-label="South Rally on Instagram">◎</a><a href="#" aria-label="South Rally on Facebook">f</a><a href="#" aria-label="South Rally on TikTok">♪</a></div>
         </div>
-      </section>
-
-      {/* Our Indoor Courts (Side Slider Carousel) */}
-      <section id="courts" className="courts-showcase-section">
-        <div className="courts-showcase-container">
-          <div className="courts-showcase-left animate-fade-up">
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#10b981', display: 'block', marginBottom: '8px' }}>
-              Our Indoor Courts
-            </span>
-            <h2 className="courts-showcase-title">Built for Every Pickleball Player</h2>
-            <p className="courts-showcase-desc">
-              Clean, safe, and fully indoor courts so you can play your best, no matter the weather.
-            </p>
-            
-            <ul className="courts-showcase-list">
-              {[
-                'Climate-controlled environment',
-                'Professional court flooring',
-                'Bright LED lighting',
-                'Comfortable lounge & rest areas'
-              ].map((bullet) => (
-                <li key={bullet} className="courts-showcase-item">
-                  <CheckCircle2 size={16} style={{ color: '#10b981', flexShrink: 0 }} />
-                  <span>{bullet}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
-              <button 
-                onClick={handlePrev} 
-                disabled={activeIndex === 0}
-                style={{
-                  width: '36px', height: '36px', borderRadius: '50%',
-                  border: '1px solid var(--color-border)', background: 'var(--color-card)',
-                  color: activeIndex === 0 ? 'var(--color-text-disabled)' : 'var(--color-text-primary)',
-                  display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center',
-                  cursor: activeIndex === 0 ? 'not-allowed' : 'pointer',
-                  transition: 'all var(--duration-fast)'
-                }}
-                className="carousel-nav-btn"
-                aria-label="Previous court"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <button 
-                onClick={handleNext} 
-                disabled={activeIndex === maxIndex}
-                style={{
-                  width: '36px', height: '36px', borderRadius: '50%',
-                  border: '1px solid var(--color-border)', background: 'var(--color-card)',
-                  color: activeIndex === maxIndex ? 'var(--color-text-disabled)' : 'var(--color-text-primary)',
-                  display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center',
-                  cursor: activeIndex === maxIndex ? 'not-allowed' : 'pointer',
-                  transition: 'all var(--duration-fast)'
-                }}
-                className="carousel-nav-btn"
-                aria-label="Next court"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
-          </div>
-
-          <div style={{ overflow: 'hidden', width: '100%' }}>
-            <div 
-              style={{
-                display: 'flex',
-                transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                transform: `translateX(-${activeIndex * 100}%)`,
-                width: '100%'
-              }}
-            >
-              {displayPages.map((pageCourts, pageIdx) => (
-                <div 
-                  key={pageIdx} 
-                  style={{ 
-                    flex: '0 0 100%', 
-                    width: '100%',
-                    display: isMobile ? 'flex' : 'grid',
-                    flexDirection: isMobile ? 'column' : undefined,
-                    gridTemplateColumns: isMobile ? undefined : '1fr 1fr',
-                    alignItems: isMobile ? undefined : 'start',
-                    gap: '16px',
-                    boxSizing: 'border-box',
-                    padding: isMobile ? '0' : '0 8px'
-                  }}
-                >
-                  {pageCourts.map((court) => (
-                    <div key={court.id} className="showcase-card" style={{ width: '100%' }}>
-                      <div className="showcase-img-container">
-                        <img src={court.image} alt={court.name} className="showcase-img" />
-                        <div className="showcase-number">{court.id}</div>
-                      </div>
-                      <div className="showcase-footer">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <Calendar size={13} style={{ color: 'var(--color-text-secondary)' }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{court.name}</span>
-                        </div>
-                        <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', fontWeight: 500 }}>Indoor Court</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        {/* Clickable indicators dots representing the pages */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '32px' }}>
-          {Array.from({ length: isMobile ? 10 : 3 }).map((_, idx) => {
-            const isActive = activeIndex === idx
-            return (
-              <button
-                key={idx}
-                onClick={() => setActiveIndex(idx)}
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: isActive ? '#10b981' : 'var(--color-border)',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  transition: 'all var(--duration-fast)'
-                }}
-                aria-label={`Go to page ${idx + 1}`}
-              />
-            )
-          })}
-        </div>
-      </section>
-
-      {/* How it Works Section */}
-      <section id="how-it-works" className="how-section" style={{ background: 'var(--color-bg-primary)', borderBottom: '1px solid var(--color-border)' }}>
-        <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-          <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            How It Works
-          </span>
-          <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', marginTop: '8px', margin: '8px 0 0' }}>
-            Book & Play in 6 Easy Steps
-          </h2>
-        </div>
-
-        <div className="stepper-horizontal-wrapper" style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', width: '100%', gap: '16px' }}>
-          {/* Dashboard Connector Line (Dashed) */}
-          <div className="stepper-line-track" style={{
-            position: 'absolute', top: '24px', left: '4%', right: '4%', height: '2px',
-            borderTop: '2px dashed var(--color-border)', zIndex: 1
-          }} />
-
-          {[
-            { step: '1', title: 'Book a Court', desc: 'Choose your date, time, and court.', icon: Calendar },
-            { step: '2', title: 'Check In', desc: 'Scan the QR code at the venue.', icon: QrCode },
-            { step: '3', title: 'Join the Queue', desc: 'Enter the open play queue or lobby.', icon: Users },
-            { step: '4', title: 'Get Assigned', desc: "We'll assign you to the next available court.", icon: Sparkles },
-            { step: '5', title: 'Play & Enjoy', desc: 'Play your match and have fun!', icon: Trophy },
-            { step: '6', title: 'Earn Rewards', desc: 'Earn points and redeem exciting rewards.', icon: Award }
-          ].map((item, idx) => (
-            <div key={idx} className="stepper-step-node" style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              width: '15%', minWidth: '120px', zIndex: 5, textAlign: 'center'
-            }}>
-              {/* Stepper Node Circle */}
-              <div style={{
-                position: 'relative', width: '48px', height: '48px', borderRadius: '50%',
-                background: 'var(--color-card)', border: '2.5px solid var(--color-border)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--color-primary)', boxShadow: 'var(--shadow-sm)'
-              }}>
-                <item.icon size={16} />
-                <div style={{
-                  position: 'absolute', top: '-6px', right: '-6px',
-                  width: '16px', height: '16px', borderRadius: '50%',
-                  background: 'var(--color-primary)', color: 'white',
-                  fontSize: '9px', fontWeight: 900, display: 'flex',
-                  alignItems: 'center', justifyContent: 'center'
-                }} className="stepper-number-badge">
-                  {item.step}
-                </div>
-              </div>
-
-              {/* Title & Desc Container */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'inherit', textAlign: 'inherit', flex: 1 }}>
-                <h3 className="stepper-step-title" style={{ fontSize: '13px', fontWeight: 800, color: 'var(--color-text-primary)' }}>
-                  {item.title}
-                </h3>
-                <p style={{ fontSize: '11px', color: 'var(--color-text-secondary)', lineHeight: 1.4, margin: 0 }}>
-                  {item.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA Ready Banner */}
-      <section className="cta-banner-section">
-        <div className="cta-banner-container">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="banner-details-row">
-            <div className="paddle-ball-badge">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M5.5 2C3.57 2 2 3.57 2 5.5S3.57 9 5.5 9c1.47 0 2.73-.91 3.25-2.2L13 11l-3.8 3.8a2.5 2.5 0 0 0-3.2 3.2l-3 3a1 1 0 1 0 1.4 1.4l3-3a2.5 2.5 0 0 0 3.2-3.2L14.4 13l4.2 4.2c1.29.52 2.2 1.78 2.2 3.25 0 1.93-1.57 3.5-3.5 3.5S13.8 22.43 13.8 20.5a1 1 0 1 0-2 0c0 3.03 2.47 5.5 5.5 5.5s5.5-2.47 5.5-5.5c0-1.47-.91-2.73-2.2-3.25L16.4 13l3.8-3.8a2.5 2.5 0 0 0 3.2-3.2l3-3a1 1 0 1 0-1.4-1.4l-3 3a2.5 2.5 0 0 0-3.2 3.2L14.8 11 10.6 6.8C10.08 5.51 9.17 4.25 7.68 3.2L5.5 2z"/>
-              </svg>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'white', margin: 0 }}>Ready to Play?</h2>
-              <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.75)', margin: '4px 0 0 0' }}>Book your court now and enjoy the game!</p>
-            </div>
-          </div>
-          <Link href={session ? "/dashboard/bookings" : "/signup"} className="banner-cta-button">
-            Book Your Court Now →
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="footer-section">
-        <div className="footer-grid">
-          {/* Logo & Description */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} className="footer-info-col">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <img src="/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: '50%' }} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text-primary)', paddingLeft: '4px' }}>
-                PickleYard
-              </span>
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0, textAlign: 'left' }}>
-              Premium indoor pickleball courts. Play more, every day.
-            </p>
-            {/* Social Icons */}
-            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-              <a href="#" className="social-icon" aria-label="Facebook">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/>
-                </svg>
-              </a>
-              <a href="#" className="social-icon" aria-label="Instagram">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-                </svg>
-              </a>
-              <a href="#" className="social-icon" aria-label="Twitter">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Quick Links</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 13 }}>
-              <a href="#courts" className="footer-link">Courts</a>
-              <a href="#" className="footer-link">Pricing</a>
-              <a href="#how-it-works" className="footer-link">How It Works</a>
-              <a href="#" className="footer-link">About Us</a>
-              <a href="#" className="footer-link">Contact</a>
-            </div>
-          </div>
-
-          {/* Support */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Support</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 13 }}>
-              <a href="#" className="footer-link">Help Center</a>
-              <a href="#" className="footer-link">Terms & Conditions</a>
-              <a href="#" className="footer-link">Privacy Policy</a>
-            </div>
-          </div>
-
-          {/* Follow Us */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Follow Us</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 13 }}>
-              <a href="#" className="footer-link">Facebook</a>
-              <a href="#" className="footer-link">Instagram</a>
-              <a href="#" className="footer-link">TikTok</a>
-              <a href="#" className="footer-link">YouTube</a>
-            </div>
-          </div>
-        </div>
-
-        {/* Copyright & Footprint */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 12,
-            fontSize: 12,
-            color: 'var(--color-text-secondary)',
-            marginTop: 32,
-            borderTop: '1px solid var(--color-border)',
-            paddingTop: 16
-          }}
-          className="footer-bottom-flex"
-        >
-          <div>© 2026 PickleYard. All rights reserved.</div>
-          <div>
-            Built & Crafted by{' '}
-            <a
-              href="https://novaryn.tech/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: 'var(--color-primary)',
-                fontWeight: 700,
-                textDecoration: 'none',
-                transition: 'opacity 0.2s'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8' }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
-            >
-              Novaryn
-            </a>
-          </div>
-        </div>
+        <div className={styles.copyright}>© 2026 South Rally Pickleball Club. All rights reserved.</div>
       </footer>
 
-      {/* OAuth error detection - wrapped in Suspense so useSearchParams doesn't block static prerendering */}
       <Suspense fallback={null}>
-        <OAuthErrorHandler onError={(msg) => { setAuthError(msg); setIsSignInOpen(true) }} />
+        <OAuthErrorHandler onError={handleOAuthError} />
       </Suspense>
-
-      {/* Auth Modal */}
-      <SignInModal
-        isOpen={isSignInOpen}
-        onClose={() => { setIsSignInOpen(false); setAuthError(null) }}
-        initialError={authError}
-      />
-
-      <style>{`
-        .header-container {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 80px;
-          display: flex;
-          align-items: center;
-          z-index: 500;
-          background: transparent;
-          border-bottom: 1px solid transparent;
-          color: white;
-          transition: all 0.3s ease;
-        }
-
-        .header-inner {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 0 48px;
-        }
-
-        .header-container.scrolled {
-          background: rgba(255, 255, 255, 0.85) !important;
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border-bottom: 1px solid var(--color-border);
-          box-shadow: var(--shadow-sm);
-          height: 64px;
-          color: var(--color-text-primary) !important;
-        }
-
-        .header-container .logo-text,
-        .header-container .login-btn-link {
-          color: inherit !important;
-        }
-
-        .header-container .nav-link {
-          color: rgba(255, 255, 255, 0.8) !important;
-          transition: color 0.3s ease;
-        }
-        .header-container .nav-link:hover {
-          color: white !important;
-        }
-
-        .header-container.scrolled .nav-link {
-          color: var(--color-text-secondary) !important;
-        }
-        .header-container.scrolled .nav-link:hover {
-          color: var(--color-primary) !important;
-        }
-
-        .header-container .mobile-menu-trigger {
-          color: inherit !important;
-          transition: color 0.3s ease;
-        }
-
-        .desktop-nav {
-          display: flex;
-          align-items: center;
-          gap: 32px;
-        }
-
-        .desktop-actions {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-        }
-
-        .mobile-menu-trigger {
-          display: none;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          color: var(--color-text-primary);
-          padding: 4px;
-        }
-
-        .mobile-drawer {
-          position: fixed;
-          top: 80px;
-          left: 0;
-          width: 100%;
-          background: var(--color-card);
-          border-bottom: 1px solid var(--color-border);
-          padding: 16px 24px;
-          box-shadow: var(--shadow-md);
-          z-index: 45;
-          transition: top 0.3s ease;
-        }
-        .header-container.scrolled ~ .mobile-drawer {
-          top: 64px;
-        }
-
-        .nav-link {
-          text-decoration: none;
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--color-text-secondary);
-          transition: color var(--duration-fast);
-        }
-        .nav-link:hover {
-          color: var(--color-text-primary);
-        }
-
-        .stepper-step-title {
-          margin: 14px 0 4px;
-        }
-
-        .nav-link-mobile {
-          text-decoration: none;
-          font-size: 16px;
-          font-weight: 600;
-          color: var(--color-text-primary);
-        }
-
-        .login-btn-link:hover {
-          color: var(--color-text-primary) !important;
-        }
-
-        .get-started-btn {
-          background: var(--color-primary);
-          color: white;
-          border-radius: var(--radius-md);
-          padding: 11px 22px;
-          font-size: 14px;
-          font-weight: 700;
-          text-decoration: none;
-          box-shadow: var(--shadow-primary-btn);
-          border: none;
-          cursor: pointer;
-          transition: background var(--duration-fast) var(--ease-out);
-          display: inline-block;
-        }
-        .get-started-btn:hover {
-          background: var(--color-primary-hover) !important;
-        }
-
-        .sec-btn {
-          background: var(--color-card);
-          color: var(--color-text-primary);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: 11px 22px;
-          font-size: 14px;
-          font-weight: 700;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: var(--shadow-sm);
-          transition: background var(--duration-fast);
-        }
-        .sec-btn:hover {
-          background: var(--color-surface) !important;
-        }
-
-        /* Hero Layout */
-        .hero-section {
-          background:
-            radial-gradient(circle at 66% 34%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 24%, transparent 48%),
-            linear-gradient(180deg, rgba(5, 8, 12, 0.18) 0%, rgba(5, 8, 12, 0.24) 42%, rgba(5, 8, 12, 0.72) 100%),
-            linear-gradient(90deg, rgba(7, 10, 15, 0.92) 0%, rgba(7, 10, 15, 0.76) 28%, rgba(7, 10, 15, 0.26) 56%, rgba(7, 10, 15, 0.14) 100%),
-            url('/paddleyard-hero-section.jpg');
-          background-size: cover;
-          background-position: center;
-          background-attachment: fixed;
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          padding-top: 120px;
-          padding-bottom: 80px;
-          position: relative;
-          overflow: hidden;
-          border-bottom: 1px solid var(--color-border);
-        }
-
-        .hero-section::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background:
-            radial-gradient(ellipse at 18% 52%, rgba(0, 0, 0, 0.34) 0%, rgba(0, 0, 0, 0.12) 34%, transparent 58%),
-            radial-gradient(ellipse at 78% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 34%);
-          z-index: 1;
-        }
-
-        .hero-section .badge-courts {
-          background: rgba(255, 255, 255, 0.12) !important;
-          border: 1px solid rgba(255, 255, 255, 0.2) !important;
-          color: white !important;
-        }
-
-        .hero-section .hero-subtitle {
-          color: rgba(255, 255, 255, 0.75) !important;
-        }
-
-        .hero-section .sec-btn {
-          background: rgba(255, 255, 255, 0.08) !important;
-          color: white !important;
-          border: 1px solid rgba(255, 255, 255, 0.25) !important;
-        }
-        .hero-section .sec-btn:hover {
-          background: rgba(255, 255, 255, 0.16) !important;
-        }
-
-        .hero-container {
-          max-width: 1440px;
-          margin: 0 auto;
-          padding: 0 64px;
-          width: 100%;
-          display: grid;
-          grid-template-columns: 1.15fr 1.4fr;
-          gap: 48px;
-          align-items: center;
-          position: relative;
-          z-index: 10;
-        }
-
-        .hero-left-content {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          position: relative;
-          z-index: 10;
-          text-shadow: 0 2px 12px rgba(0, 0, 0, 0.38);
-        }
-
-        .hero-left-content .hero-actions,
-        .hero-left-content .hero-features-flex,
-        .hero-left-content .badge-courts {
-          text-shadow: none;
-        }
-
-        .badge-courts {
-          align-self: flex-start;
-          background: var(--color-primary-subtle);
-          color: var(--color-primary);
-          font-size: 11px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          padding: 6px 14px;
-          border-radius: var(--radius-full);
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          border: 1px solid var(--color-primary-muted);
-        }
-        .badge-courts-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #10B981;
-        }
-
-        .hero-title {
-          font-size: 56px;
-          font-weight: 900;
-          color: var(--color-text-primary);
-          line-height: 1.08;
-          letter-spacing: -0.025em;
-          text-align: left;
-          margin: 0;
-        }
-        .title-accent-success {
-          color: #10B981;
-        }
-
-        .hero-subtitle {
-          font-size: 16px;
-          color: var(--color-text-secondary);
-          line-height: 1.6;
-          max-width: 480px;
-          text-align: left;
-          margin: 0;
-          font-weight: 500;
-        }
-
-        .hero-actions {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        /* Right Visual Canvas */
-        .hero-right-visual {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          justify-content: center;
-          position: relative;
-          width: 100%;
-          min-height: 480px;
-          z-index: 10;
-        }
-
-        .hero-booking-card {
-          width: 240px;
-          background: rgba(255, 255, 255, 0.96);
-          border: 1px solid rgba(255, 255, 255, 0.72);
-          border-radius: 18px;
-          padding: 22px 18px 18px;
-          box-shadow: 0 22px 54px rgba(0, 0, 0, 0.22);
-          color: var(--color-text-primary);
-        }
-
-        .hero-booking-card h2 {
-          margin: 0;
-          text-align: center;
-          font-size: 18px;
-          font-weight: 900;
-          letter-spacing: -0.01em;
-        }
-
-        .hero-booking-card p {
-          margin: 4px 0 16px;
-          color: var(--color-text-secondary);
-          text-align: center;
-          font-size: 11px;
-          font-weight: 600;
-        }
-
-        .hero-booking-tabs {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          border: 1px solid var(--color-border);
-          border-radius: 8px;
-          overflow: hidden;
-          margin-bottom: 14px;
-        }
-
-        .hero-booking-tabs button {
-          height: 32px;
-          border: 0;
-          background: white;
-          color: var(--color-text-primary);
-          font-size: 10px;
-          font-weight: 850;
-          cursor: pointer;
-        }
-
-        .hero-booking-tabs button.active {
-          background: var(--color-primary);
-          color: white;
-        }
-
-        .hero-booking-fields {
-          display: grid;
-          gap: 8px;
-        }
-
-        .hero-booking-fields div {
-          min-height: 36px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          border: 1px solid var(--color-border);
-          border-radius: 8px;
-          background: white;
-          padding: 0 10px;
-        }
-
-        .hero-booking-fields span {
-          color: var(--color-text-secondary);
-          font-size: 10px;
-          font-weight: 750;
-        }
-
-        .hero-booking-fields strong {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          color: var(--color-text-primary);
-          font-size: 11px;
-          font-weight: 850;
-        }
-
-        .hero-booking-fields svg {
-          color: var(--color-text-secondary);
-        }
-
-        .hero-check-availability {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 36px;
-          margin-top: 14px;
-          border-radius: 8px;
-          background: var(--color-accent);
-          color: white;
-          font-size: 12px;
-          font-weight: 900;
-          text-decoration: none;
-          box-shadow: 0 8px 18px rgba(244, 124, 0, 0.22);
-        }
-
-        .hero-booking-note {
-          display: block;
-          margin-top: 12px;
-          text-align: center;
-          color: var(--color-primary);
-          font-size: 10.5px;
-          font-weight: 850;
-        }
-
-        /* Features Section */
-        .features-section {
-          padding: 80px 0;
-          background: var(--color-bg-primary);
-          border-bottom: 1px solid var(--color-border);
-        }
-        .features-container-grid {
-          max-width: 1440px;
-          margin: 0 auto;
-          padding: 0 64px;
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 32px;
-        }
-        .feature-item-card {
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-xl);
-          padding: 28px 24px;
-          box-shadow: var(--shadow-sm);
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          transition: transform var(--duration-fast), box-shadow var(--duration-fast);
-        }
-        .feature-item-card:hover {
-          transform: translateY(-4px);
-          box-shadow: var(--shadow-md);
-        }
-        .feature-icon-wrapper {
-          width: 44px;
-          height: 44px;
-          border-radius: var(--radius-lg);
-          background: var(--color-primary-subtle);
-          color: var(--color-primary);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 4px;
-        }
-
-        /* Ecosystem Section */
-        .ecosystem-section {
-          border-top: 1px solid var(--color-border);
-          border-bottom: 1px solid var(--color-border);
-          background: var(--color-surface);
-        }
-        .ecosystem-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 32px;
-        }
-        .ecosystem-card {
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-xl);
-          padding: 32px;
-          box-shadow: var(--shadow-sm);
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          transition: transform var(--duration-fast);
-        }
-        .ecosystem-card:hover {
-          transform: translateY(-2px);
-        }
-        .ecosystem-badge {
-          background: var(--color-primary-subtle);
-          color: var(--color-primary);
-          font-size: 10px;
-          font-weight: 800;
-          padding: 4px 10px;
-          border-radius: var(--radius-full);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        /* Rewards Catalog Preview */
-        .rewards-container {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 80px;
-          align-items: center;
-        }
-        .rewards-left {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        .rewards-right {
-          display: flex;
-          justify-content: flex-end;
-          width: 100%;
-        }
-        .rewards-mock-card {
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-2xl);
-          padding: 32px;
-          box-shadow: var(--shadow-lg);
-          max-width: 440px;
-          width: 100%;
-          box-sizing: border-box;
-        }
-
-        /* Showcase Section */
-        .courts-showcase-section {
-          padding: 80px 0;
-          background: var(--color-surface);
-          border-bottom: 1px solid var(--color-border);
-        }
-        .courts-showcase-container {
-          max-width: 1440px;
-          margin: 0 auto;
-          padding: 0 64px;
-          display: grid;
-          grid-template-columns: 1fr 1.6fr;
-          gap: 80px;
-          align-items: center;
-        }
-        .courts-showcase-left {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          text-align: left;
-        }
-        .courts-showcase-title {
-          font-size: 36px;
-          font-weight: 800;
-          color: var(--color-text-primary);
-          letter-spacing: -0.025em;
-          margin: 0 0 16px;
-          line-height: 1.15;
-        }
-        .courts-showcase-desc {
-          fontSize: 15px;
-          color: var(--color-text-secondary);
-          line-height: 1.6;
-          margin: 0 0 32px;
-          font-weight: 500;
-        }
-        .courts-showcase-list {
-          list-style: none;
-          padding: 0;
-          margin: 0 0 32px;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        .courts-showcase-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          font-size: 14px;
-          color: var(--color-text-primary);
-          font-weight: 650;
-        }
-        .showcase-card {
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-xl);
-          overflow: hidden;
-          box-shadow: var(--shadow-sm);
-        }
-        .showcase-img-container {
-          position: relative;
-          aspect-ratio: 16/10;
-          width: 100%;
-          overflow: hidden;
-          background: var(--color-surface);
-        }
-        .showcase-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .showcase-number {
-          position: absolute;
-          top: 16px;
-          left: 16px;
-          width: 32px;
-          height: 32px;
-          background: var(--color-primary);
-          color: white;
-          font-weight: 900;
-          font-size: 15px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: var(--shadow-sm);
-        }
-        .showcase-footer {
-          padding: 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-top: 1px solid var(--color-border-subtle);
-        }
-
-        /* How it Works Section */
-        .how-section {
-          padding: 80px 64px;
-          max-width: 1440px;
-          margin: 0 auto;
-        }
-
-        /* Ready Banner */
-        .cta-banner-section {
-          padding: 0 64px 80px;
-          background: var(--color-bg-primary);
-          max-width: 1440px;
-          margin: 0 auto;
-        }
-        .cta-banner-container {
-          background: linear-gradient(135deg, #02383a 0%, #011d1f 100%);
-          border-radius: var(--radius-2xl);
-          padding: 48px 64px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          box-shadow: var(--shadow-md);
-          color: white;
-        }
-        .paddle-ball-badge {
-          width: 52px;
-          height: 52px;
-          background: rgba(255,255,255,0.08);
-          border: 1px solid rgba(255,255,255,0.15);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--color-accent);
-          flex-shrink: 0;
-        }
-        .banner-cta-button {
-          background: var(--color-accent);
-          color: var(--color-primary-dark, #012123);
-          font-size: 14px;
-          font-weight: 800;
-          padding: 14px 28px;
-          border-radius: var(--radius-lg);
-          text-decoration: none;
-          box-shadow: 0 4px 12px rgba(244, 124, 0, 0.2);
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          transition: transform var(--duration-fast);
-        }
-        .banner-cta-button:hover {
-          transform: translateY(-2px);
-        }
-
-        /* Footer */
-        .footer-section {
-          background: var(--color-card);
-          border-top: 1px solid var(--color-border);
-          padding: 80px 64px 32px;
-        }
-        .footer-grid {
-          max-width: 1440px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: 2fr 1fr 1fr;
-          gap: 80px;
-          margin-bottom: 64px;
-        }
-
-        /* ── Responsive media queries ── */
-        @media (max-width: 1120px) {
-          .features-container-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-          }
-          .hero-container {
-            grid-template-columns: 1fr;
-            text-align: center;
-            gap: 40px;
-          }
-          .hero-left-content {
-            align-items: center;
-          }
-          .hero-title {
-            text-align: center;
-          }
-          .hero-subtitle {
-            text-align: center;
-            max-width: 100%;
-          }
-          .hero-right-visual {
-            justify-content: center;
-            align-items: center;
-            max-width: 600px;
-            margin: 0 auto;
-            min-height: auto;
-          }
-          .hero-booking-card {
-            width: 100%;
-            max-width: 320px;
-          }
-          .hero-background-image {
-            width: 100%;
-            opacity: 0.18;
-          }
-          .hero-background-image::before {
-            background: linear-gradient(to bottom, var(--color-bg-primary) 0%, transparent 100%);
-          }
-          .stepper-line-track {
-            display: none !important;
-          }
-          .stepper-horizontal-wrapper {
-            flex-direction: column !important;
-            gap: 24px !important;
-            align-items: flex-start !important;
-            padding-left: 20px !important;
-          }
-          .stepper-step-node {
-            width: 100% !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: flex-start !important;
-            text-align: left !important;
-            gap: 16px !important;
-          }
-          .stepper-step-title {
-            margin: 2px 0 4px !important;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .header-container {
-            height: 72px;
-          }
-          .header-inner {
-            padding: 0 24px;
-          }
-          .header-container.scrolled {
-            height: 56px;
-          }
-          .desktop-nav {
-            display: none !important;
-          }
-          .desktop-actions {
-            display: none !important;
-          }
-          .mobile-menu-trigger {
-            display: block !important;
-          }
-          .mobile-drawer {
-            top: 72px;
-          }
-          .header-container.scrolled ~ .mobile-drawer {
-            top: 56px;
-          }
-          .hero-section {
-            background-attachment: scroll !important;
-            padding-top: 100px;
-          }
-          .hero-container {
-            padding: 0 24px;
-          }
-          .hero-title {
-            font-size: 36px;
-          }
-          .hero-actions {
-            flex-direction: column;
-            width: 100%;
-            gap: 12px;
-          }
-          .hero-cta-btn {
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-          }
-          .features-section {
-            padding: 60px 24px;
-          }
-          .features-container-grid {
-            grid-template-columns: 1fr;
-            padding: 0;
-          }
-          .ecosystem-grid {
-            grid-template-columns: 1fr;
-          }
-          .rewards-container {
-            grid-template-columns: 1fr;
-            gap: 40px;
-          }
-          .rewards-right {
-            justify-content: center;
-          }
-          .rewards-left {
-            align-items: center;
-            text-align: center;
-          }
-          .rewards-left h2, .rewards-left p {
-            text-align: center;
-          }
-          .courts-showcase-section {
-            padding: 60px 24px;
-          }
-          .courts-showcase-container {
-            grid-template-columns: 1fr;
-            gap: 40px;
-          }
-          .courts-showcase-left {
-            align-items: center;
-            text-align: center;
-          }
-          .courts-showcase-title, .courts-showcase-desc {
-            text-align: center;
-          }
-          .how-section {
-            padding: 60px 24px;
-          }
-          .cta-banner-section {
-            padding: 0 24px 60px;
-          }
-          .cta-banner-container {
-            flex-direction: column;
-            gap: 20px;
-            padding: 32px 24px;
-            text-align: center;
-          }
-          .banner-details-row {
-            flex-direction: column;
-            text-align: center;
-            align-items: center;
-          }
-          .banner-cta-button {
-            width: 100%;
-            justify-content: center;
-            box-sizing: border-box;
-          }
-          .footer-grid {
-            grid-template-columns: 1fr;
-            gap: 30px;
-          }
-          .footer-bottom-flex {
-            flex-direction: column;
-            gap: 8px;
-            text-align: center;
-          }
-        }
-      `}</style>
+      <SignInModal isOpen={isSignInOpen} onClose={() => { setIsSignInOpen(false); setAuthError(null) }} initialError={authError} />
     </div>
   )
 }

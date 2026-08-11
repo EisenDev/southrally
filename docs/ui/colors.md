@@ -8,7 +8,7 @@
 
 ## 1. Design Philosophy
 
-PaddleYard v2's color palette transitions from the basic flat colors of the legacy PickleBook site into a **premium athletic aesthetic**. The tone is directly inspired by the sport's high energy and premium facilities:
+South Rally's color palette transitions from the basic flat colors of the legacy PickleBook site into a **premium athletic aesthetic**. The tone is directly inspired by the sport's high energy and premium facilities:
 
 *   **Court Navy (`#091E3A`)** anchors the application. It represents structure, professional club management, and provides heavy contrast.
 *   **Volt Lime (`#8AE234`)** represents the vibrant color of a pickleball/tennis ball. It is the energetic spark of the UI, utilized for active states, indicators, and primary CTAs.

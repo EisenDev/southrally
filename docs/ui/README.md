@@ -9,9 +9,9 @@
 
 ## 1. Design Philosophy
 
-PaddleYard v2's design language is modeled after Avenor's **token-driven structure and layout principles**, but shifts the visual tone to a **premium, dynamic, and clean athletic style**. 
+South Rally's design language is modeled after Avenor's **token-driven structure and layout principles**, but shifts the visual tone to a **premium, dynamic, and clean athletic style**.
 
-While Avenor is warm, organic, and terracotta-focused to reduce job search anxiety, PaddleYard v2 represents an **active, sporty, and social sports club**. The UI is built to feel energetic, high-performance, and incredibly sharp, using a high-contrast premium palette.
+While Avenor is warm, organic, and terracotta-focused to reduce job search anxiety, South Rally represents an **active, sporty, and social sports club**. The UI is built to feel energetic, high-performance, and incredibly sharp, using a high-contrast premium palette.
 
 ---
 
@@ -38,18 +38,18 @@ Every spacing multiplier, hover background, card corner, and font size must refe
 
 The system details are divided into the following files:
 
-*   [docs/ui/colors.md](file:///home/eisen/projects/random-proj/paddleyardv2/docs/ui/colors.md) — Exact colors, semantic mappings, and accessibility checks.
-*   [docs/ui/design-tokens.md](file:///home/eisen/projects/random-proj/paddleyardv2/docs/ui/design-tokens.md) — Master registers (spacings, shadows, corners, fonts).
-*   [docs/ui/components/sidebar.md](file:///home/eisen/projects/random-proj/paddleyardv2/docs/ui/components/sidebar.md) — App navigation.
-*   [docs/ui/components/cards.md](file:///home/eisen/projects/random-proj/paddleyardv2/docs/ui/components/cards.md) — Metrics and item components.
-*   [docs/ui/components/paddle-stack.md](file:///home/eisen/projects/random-proj/paddleyardv2/docs/ui/components/paddle-stack.md) — Queue dashboard interface.
-*   [docs/ui/components/bookings-calendar.md](file:///home/eisen/projects/random-proj/paddleyardv2/docs/ui/components/bookings-calendar.md) — Reservation grid schedule interface.
+*   [docs/ui/colors.md](file:///home/eisen/projects/random-proj/south-rally/docs/ui/colors.md) — Exact colors, semantic mappings, and accessibility checks.
+*   [docs/ui/design-tokens.md](file:///home/eisen/projects/random-proj/south-rally/docs/ui/design-tokens.md) — Master registers (spacings, shadows, corners, fonts).
+*   [docs/ui/components/sidebar.md](file:///home/eisen/projects/random-proj/south-rally/docs/ui/components/sidebar.md) — App navigation.
+*   [docs/ui/components/cards.md](file:///home/eisen/projects/random-proj/south-rally/docs/ui/components/cards.md) — Metrics and item components.
+*   [docs/ui/components/paddle-stack.md](file:///home/eisen/projects/random-proj/south-rally/docs/ui/components/paddle-stack.md) — Queue dashboard interface.
+*   [docs/ui/components/bookings-calendar.md](file:///home/eisen/projects/random-proj/south-rally/docs/ui/components/bookings-calendar.md) — Reservation grid schedule interface.
 
 ---
 
 ## 4. Key Interface Archetypes (From Templates)
 
-PaddleYard v2 remodels three core interface environments:
+South Rally remodels three core interface environments:
 
 1.  **The Public Landing Page:** Clean white background, thick navy titles, dynamic hero action sections, and bright green/lime accents featuring court activities.
 2.  **The Member Dashboard:** Left sidebar navigation (`220px`), top greeting card (`Court Navy` header containing quick buttons to "Join Open Play", "Book a Court", "My QR"), and a dashboard grid displaying active queues, transaction balance, and recent activities.

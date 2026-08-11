@@ -16,7 +16,7 @@ The sidebar is the primary navigation control for all authenticated member and s
 
 ```
 ┌──────────────────────┐
-│  [P] PaddleYard      │  ← Logo area: 56px height, hairline divider
+│  [P] South Rally      │  ← Logo area: 56px height, hairline divider
 │  ────────────────    │
 │                      │
 │  [icon] Dashboard    │  ← Active state: `--color-primary` text + Volt accent bar
@@ -51,7 +51,7 @@ Z-index:        `--z-sidebar` (200)
 ```
 Height:         56px (`--header-height`)
 Padding:        0 16px (`--spacing-sidebar-x`)
-Content:        Club logo icon (Volt Lime circle with Navy 'P') + "PaddleYard" wordmark
+Content:        Club logo icon (Volt Lime circle with Navy 'P') + "South Rally" wordmark
 Font:           --font-size-h3, --font-weight-bold
 Color:          --color-text-primary (#0F172A)
 Alignment:      flex, align-items: center, gap: 8px

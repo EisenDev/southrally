@@ -3,16 +3,16 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'PaddleYard',
-    template: '%s | PaddleYard',
+    default: 'South Rally',
+    template: '%s | South Rally',
   },
   description:
-    'Book your pickleball court in just a few clicks. Track play time, join open play sessions, manage player stacks, and check in securely.',
+    'Book a South Rally pickleball court, join open play, check in quickly, and earn member rewards.',
   keywords: ['pickleball booking', 'court scheduler', 'open play check-in', 'paddle stacking', 'pickleball club'],
   icons: {
-    icon: '/paddleyard-logo.png',
-    shortcut: '/paddleyard-logo.png',
-    apple: '/paddleyard-logo.png',
+    icon: '/south-rally-logo.png',
+    shortcut: '/south-rally-logo.png',
+    apple: '/south-rally-logo.png',
   }
 }
 

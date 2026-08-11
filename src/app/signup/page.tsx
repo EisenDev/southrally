@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useTransition, useEffect, Suspense } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { AlertCircle, Check, Eye, EyeOff, Sparkles, ArrowRight, Info, User, Mail, Lock, Calendar, Users, Layers, Trophy, Heart, Zap, RefreshCw } from 'lucide-react'
-import { signUpAction } from '@/lib/actions/auth'
+import { AlertCircle, Check, Eye, EyeOff, ArrowRight, Info, User, Mail, Lock, Calendar, Users, Layers, Trophy, Heart, Zap, RefreshCw } from 'lucide-react'
 import { SignInModal } from '@/components/auth/signin-modal'
 import { signIn } from 'next-auth/react'
 
@@ -101,10 +101,10 @@ function SignUpPageInner() {
           {/* Logo & Premium pill */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <Link href="/" className="signup-logo-link" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'white', padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                <img src="/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'white', padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 14px rgba(0,0,0,0.18)' }}>
+                <Image src="/south-rally-logo.png" alt="South Rally logo" width={54} height={56} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
               </div>
-              <span className="signup-logo-text" style={{ fontSize: '20px', fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>PaddleYard</span>
+              <span className="signup-logo-text" style={{ fontSize: '20px', fontWeight: 800, color: 'white', letterSpacing: '0.06em' }}>South Rally</span>
             </Link>
             
             <div className="signup-badge">
@@ -115,8 +115,8 @@ function SignUpPageInner() {
           {/* Main copy */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', margin: '48px 0 32px' }}>
             <h1 className="signup-left-title">
-              Play more,<br />
-              <span className="signup-left-title-accent">wait less.</span>
+              Join the rally.<br />
+              <span className="signup-left-title-accent">Belong here.</span>
             </h1>
             <p className="signup-left-desc">
               Your all-in-one platform for court bookings, open play, and the ultimate pickleball experience.
@@ -129,22 +129,22 @@ function SignUpPageInner() {
               {
                 title: 'Real-time Court Scheduler',
                 desc: 'Courts 1–14 at your fingertips',
-                icon: <Calendar size={18} color="#00e676" />
+                icon: <Calendar size={18} color="hsl(69 35% 52%)" />
               },
               {
                 title: 'Live Check-in',
                 desc: 'QR scan at the lobby',
-                icon: <Users size={18} color="#00e676" />
+                icon: <Users size={18} color="hsl(69 35% 52%)" />
               },
               {
                 title: 'Paddle Stack',
                 desc: 'Collaborative queue boards',
-                icon: <Layers size={18} color="#00e676" />
+                icon: <Layers size={18} color="hsl(69 35% 52%)" />
               },
               {
                 title: 'Rewards System',
                 desc: 'Play more. Earn more.',
-                icon: <Trophy size={18} color="#00e676" />
+                icon: <Trophy size={18} color="hsl(69 35% 52%)" />
               }
             ].map((item, idx) => (
               <div key={idx} className="signup-feature-card">
@@ -162,21 +162,21 @@ function SignUpPageInner() {
           {/* Bottom stats bar */}
           <div className="signup-left-bottom-bar">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Zap size={16} color="#ffeb3b" />
+              <Zap size={16} color="hsl(69 35% 52%)" />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: 'white' }}>Faster</span>
                 <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>Game Time</span>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Users size={16} color="#ffeb3b" />
+              <Users size={16} color="hsl(69 35% 52%)" />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: 'white' }}>Bigger</span>
                 <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>Community</span>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Heart size={16} color="#ffeb3b" />
+              <Heart size={16} color="hsl(69 35% 52%)" />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: 'white' }}>Healthier</span>
                 <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>Lifestyle</span>
@@ -191,18 +191,18 @@ function SignUpPageInner() {
         <div className="signup-form-wrap">
           {/* Mobile-only logo */}
           <Link href="/" className="signup-logo-link signup-logo-mobile" style={{ alignSelf: 'center', marginBottom: '8px' }}>
-            <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'white', padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-border)' }}>
-              <img src="/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'white', padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-border)' }}>
+                <Image src="/south-rally-logo.png" alt="South Rally logo" width={58} height={60} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
             </div>
-            <span className="signup-logo-text" style={{ color: 'var(--color-text-primary)', fontSize: '20px', fontWeight: 800 }}>PaddleYard</span>
+            <span className="signup-logo-text" style={{ color: 'var(--color-text-primary)', fontSize: '20px', fontWeight: 800 }}>South Rally</span>
           </Link>
 
           {/* Centered logo for desktop */}
           <div className="signup-logo-desktop-center">
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'white', border: '1px solid var(--color-border)', padding: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', marginBottom: '8px' }}>
-              <img src="/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <div style={{ width: 108, height: 108, borderRadius: '50%', background: 'white', border: '1px solid var(--color-border)', padding: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(3, 48, 38, 0.15)', marginBottom: '8px' }}>
+              <Image src="/south-rally-logo.png" alt="South Rally logo" width={94} height={98} priority unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
             </div>
-            <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--color-text-primary)' }}>PaddleYard</span>
+            <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'Georgia, serif', letterSpacing: '0.08em', textTransform: 'uppercase' }}>South Rally</span>
           </div>
 
           {/* Heading */}
@@ -281,7 +281,7 @@ function SignUpPageInner() {
                   We sent a 6-digit verification code to <strong>{email}</strong>. Please enter the code below to complete signup.
                 </p>
                 <div style={{ fontSize: '12px', background: 'rgba(245,158,11,0.08)', color: '#d97706', padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(245,158,11,0.25)', marginTop: '6px', fontWeight: 500 }}>
-                  ✉️ <strong>Important:</strong> If you don't see the email, please check your <strong>SPAM</strong> or <strong>Promotions</strong> folder!
+                  ✉️ <strong>Important:</strong> If you don&apos;t see the email, please check your <strong>SPAM</strong> or <strong>Promotions</strong> folder!
                 </div>
               </div>
 
@@ -497,16 +497,25 @@ function SignUpPageInner() {
 
       <style>{`
         .signup-root {
+          --color-primary: hsl(158 67% 12%);
+          --color-primary-hover: hsl(158 67% 17%);
+          --color-border-focus: hsl(158 67% 12%);
+          --color-focus-ring: hsl(158 67% 12%);
+          --shadow-focus: 0 0 0 3px hsl(69 35% 43% / 0.24);
+          --shadow-primary-btn: 0 8px 22px hsl(158 67% 12% / 0.22);
           min-height: 100vh;
           display: flex;
-          background: var(--color-bg-primary);
+          background: hsl(43 42% 94%);
         }
 
         /* ── Left panel ── */
         .signup-left {
           position: relative;
           width: 50%;
-          background: linear-gradient(135deg, rgba(3, 49, 51, 0.96) 0%, rgba(1, 32, 34, 0.88) 100%), url('/court_illustration.jpg');
+          background:
+            radial-gradient(circle at 92% 18%, hsl(267 45% 23% / 0.9), transparent 38%),
+            repeating-linear-gradient(104deg, transparent 0 230px, hsl(69 35% 43% / 0.18) 231px 233px, transparent 234px 460px),
+            hsl(158 67% 12%);
           background-size: cover;
           background-position: center;
           display: flex;
@@ -532,8 +541,9 @@ function SignUpPageInner() {
           text-decoration: none;
         }
         .signup-logo-text {
+          font-family: Georgia, 'Times New Roman', serif;
           font-size: 18px;
-          font-weight: 700;
+          font-weight: 500;
           color: white;
           letter-spacing: -0.02em;
         }
@@ -555,16 +565,17 @@ function SignUpPageInner() {
         }
 
         .signup-left-title {
+          font-family: Georgia, 'Times New Roman', serif;
           font-size: 52px;
-          font-weight: 900;
+          font-weight: 500;
           color: white;
           line-height: 1.05;
           letter-spacing: -0.03em;
           margin: 0;
         }
         .signup-left-title-accent {
-          color: #ff9800;
-          border-bottom: 3.5px solid #ff9800;
+          color: hsl(43 42% 94%);
+          border-bottom: 3.5px solid hsl(69 35% 43%);
           padding-bottom: 2px;
         }
 
@@ -623,7 +634,7 @@ function SignUpPageInner() {
           justify-content: center;
           padding: 48px 40px;
           overflow-y: auto;
-          background: #ffffff;
+          background: hsl(43 42% 96%);
         }
 
         .signup-logo-desktop-center {
@@ -655,8 +666,9 @@ function SignUpPageInner() {
           text-align: center;
         }
         .signup-form-title {
+          font-family: Georgia, 'Times New Roman', serif;
           font-size: 24px;
-          font-weight: 900;
+          font-weight: 500;
           color: var(--color-text-primary);
           letter-spacing: -0.02em;
           margin: 0;

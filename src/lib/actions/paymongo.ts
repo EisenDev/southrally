@@ -60,12 +60,12 @@ export async function createPaymongoSessionAction(
               {
                 amount: amountInCentavos,
                 currency: 'PHP',
-                name: 'PaddleYard Credits Top-Up',
+                name: 'South Rally Credits Top-Up',
                 quantity: 1
               }
             ],
-            success_url: `${process.env.NEXTAUTH_URL || 'https://pickleyard.zeraynce.com'}/dashboard/topup?success=true`,
-            cancel_url: `${process.env.NEXTAUTH_URL || 'https://pickleyard.zeraynce.com'}/dashboard/topup?cancel=true`,
+            success_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/dashboard/topup?success=true`,
+            cancel_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/dashboard/topup?cancel=true`,
             description: `Top-up ₱${amount.toFixed(2)} for ${user.name}`,
             metadata: {
               userId: user.id,

@@ -1,10 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-/* ============================================================
-   PADDLEYARD V2 — Design System CSS Tokens (Teal & Orange Remodel)
-   Source of truth: docs/ui/colors.md (Revised for logo theme)
-   ============================================================ */
+/* Shared application design tokens. Player routes override these inside the
+   scoped South Rally dashboard theme below. */
 
 :root {
   /* ── Colors: Neutral Layer ───────────────────────────────── */
@@ -293,6 +291,144 @@ body {
   transition: margin-left var(--duration-normal) var(--ease-out);
 }
 
+/* ── South Rally authenticated player experience ─────────── */
+.player-dashboard-theme {
+  --color-bg-primary: hsl(42 35% 94%);
+  --color-surface: hsl(43 29% 90%);
+  --color-card: hsl(42 45% 97%);
+  --color-border: hsl(47 24% 76%);
+  --color-border-strong: hsl(67 20% 53%);
+  --color-border-subtle: hsl(44 27% 86%);
+  --color-border-hover: hsl(67 25% 44%);
+  --color-border-focus: hsl(158 73% 17%);
+  --color-muted: hsl(42 25% 89%);
+  --color-text-primary: hsl(159 58% 15%);
+  --color-text-secondary: hsl(155 14% 38%);
+  --color-text-disabled: hsl(48 10% 57%);
+  --color-primary: hsl(158 73% 17%);
+  --color-primary-hover: hsl(158 76% 12%);
+  --color-primary-active: hsl(158 78% 9%);
+  --color-primary-subtle: hsl(69 28% 88%);
+  --color-primary-muted: hsl(70 24% 72%);
+  --color-secondary: hsl(273 36% 25%);
+  --color-secondary-hover: hsl(273 41% 19%);
+  --color-secondary-subtle: hsl(276 25% 90%);
+  --color-accent: hsl(273 36% 25%);
+  --color-accent-hover: hsl(273 41% 19%);
+  --color-accent-subtle: hsl(276 25% 90%);
+  --color-success: hsl(72 43% 34%);
+  --color-success-subtle: hsl(70 33% 89%);
+  --color-focus-ring: hsl(158 73% 17%);
+  --color-hover-bg: hsl(70 28% 84% / 0.7);
+  --color-active-bg: hsl(70 28% 80% / 0.8);
+  --shadow-sm: 0 2px 10px hsl(158 40% 10% / 0.08);
+  --shadow-md: 0 8px 24px hsl(158 40% 10% / 0.12);
+  --shadow-lg: 0 18px 42px hsl(158 40% 10% / 0.16);
+  --shadow-hover: 0 12px 30px hsl(158 40% 10% / 0.15);
+  --shadow-focus: 0 0 0 3px hsl(72 43% 34% / 0.28);
+  --shadow-primary-btn: 0 7px 18px hsl(158 73% 12% / 0.22);
+  background:
+    radial-gradient(circle at 90% 8%, hsl(273 36% 25% / 0.08), transparent 24rem),
+    linear-gradient(145deg, hsl(42 40% 96%), hsl(44 31% 91%));
+}
+
+.player-dashboard-theme .sidebar-container {
+  background:
+    linear-gradient(180deg, hsl(158 73% 13% / 0.98), hsl(158 76% 9% / 0.99)) !important;
+  border-right-color: hsl(68 34% 48% / 0.5) !important;
+  box-shadow: 10px 0 30px hsl(158 60% 8% / 0.12);
+}
+
+.player-dashboard-theme .sidebar-container > div:first-child {
+  height: 76px !important;
+  border-bottom-color: hsl(68 34% 48% / 0.38) !important;
+  padding-inline: 18px !important;
+}
+
+.dashboard-brand-crest {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: hsl(42 45% 97%);
+  border: 1px solid hsl(48 35% 72%);
+}
+
+.dashboard-brand-crest img {
+  width: 36px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.player-dashboard-theme .sidebar-container > div:first-child span:last-child {
+  color: hsl(43 45% 94%) !important;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+}
+
+.player-dashboard-theme .sidebar-item {
+  color: hsl(43 25% 82%) !important;
+  border: 1px solid transparent;
+}
+
+.player-dashboard-theme .sidebar-item:hover {
+  color: white !important;
+  background: hsl(43 45% 96% / 0.1) !important;
+}
+
+.player-dashboard-theme .sidebar-item[aria-current='page'] {
+  color: hsl(158 73% 13%) !important;
+  background: hsl(43 45% 94%) !important;
+  border-color: hsl(68 34% 48%);
+  box-shadow: 0 7px 18px hsl(158 70% 7% / 0.22);
+}
+
+.player-dashboard-theme .sidebar-container > div:last-of-type > div {
+  background: hsl(43 45% 96% / 0.1) !important;
+  border-color: hsl(68 34% 48% / 0.45) !important;
+}
+
+.player-dashboard-theme .sidebar-container > div:last-of-type div {
+  color: hsl(43 35% 90%) !important;
+}
+
+.player-dashboard-theme .main-layout-frame > header {
+  height: 68px !important;
+  background: hsl(42 45% 97% / 0.9) !important;
+  border-bottom-color: hsl(47 24% 76%) !important;
+  backdrop-filter: blur(18px);
+}
+
+.player-dashboard-theme .main-content-area {
+  padding-top: 40px !important;
+}
+
+.player-dashboard-theme .main-content-area h1,
+.player-dashboard-theme .main-content-area h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 500 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.player-dashboard-theme .stat-card,
+.player-dashboard-theme .content-card {
+  border-color: hsl(47 24% 76%) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.player-dashboard-theme button,
+.player-dashboard-theme a {
+  transition: background-color 180ms ease-in-out, color 180ms ease-in-out,
+    border-color 180ms ease-in-out, transform 180ms ease-in-out,
+    box-shadow 180ms ease-in-out;
+}
+
 @media (max-width: 768px) {
   .sidebar-container {
     position: fixed !important;
@@ -338,5 +474,4 @@ body {
     gap: 20px !important;
   }
 }
-
 

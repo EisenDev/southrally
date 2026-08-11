@@ -18,6 +18,9 @@ interface DashboardLayoutClientProps {
 export function DashboardLayoutClient({ user, children }: DashboardLayoutClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
+  const isAdminRoute = pathname.startsWith('/dashboard/admin')
+  const usesAdminDashboard = isAdminRoute || user?.role === 'ADMIN' || user?.role === 'STAFF'
+  const dashboardThemeClass = usesAdminDashboard ? 'admin-dashboard-theme' : 'player-dashboard-theme'
 
   // Close sidebar drawer automatically on navigation change
   useEffect(() => {
@@ -29,7 +32,7 @@ export function DashboardLayoutClient({ user, children }: DashboardLayoutClientP
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-bg-primary)' }}>
+    <div className={dashboardThemeClass} style={{ minHeight: '100vh', background: 'var(--color-bg-primary)' }}>
       {/* Off-canvas Overlay for mobile drawer */}
       {isSidebarOpen && (
         <div

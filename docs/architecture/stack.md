@@ -4,7 +4,7 @@
 > **Last Updated:** 2026-07-16
 > **Status:** Active — Source of Truth
 
-This document lists every technology in the PaddleYard v2 stack along with architectural rationales.
+This document lists every technology in the South Rally stack along with architectural rationales.
 
 ---
 
@@ -23,7 +23,7 @@ This document lists every technology in the PaddleYard v2 stack along with archi
 ## 2. Database & Data Management
 
 ### PostgreSQL
-*   **Why:** PaddleYard is heavily relational. A user makes a booking, which is assigned to a court, which belongs to a time block, and generates a transaction ledger entry. PostgreSQL provides the ACID transaction guarantees required to guarantee that a court is never double-booked and that credit balances never fall negative due to concurrency issues.
+*   **Why:** South Rally is heavily relational. A user makes a booking, which is assigned to a court, which belongs to a time block, and generates a transaction ledger entry. PostgreSQL provides the ACID transaction guarantees required to guarantee that a court is never double-booked and that credit balances never fall negative due to concurrency issues.
 
 ### Prisma ORM
 *   **Why:** Provides complete TypeScript types matching our DB schemas, database migrations, and simple relation inclusion. Makes writing transactions highly readable.

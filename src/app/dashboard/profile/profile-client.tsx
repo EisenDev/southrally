@@ -308,8 +308,8 @@ export function ProfileClient({ user }: Props) {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <img src="/paddleyard-logo.png" alt="PaddleYard Logo" style={{ width: 28, height: 28, objectFit: 'contain' }} />
-                  <span style={{ fontSize: '13px', fontWeight: 800, letterSpacing: '-0.01em' }}>PaddleYard Club</span>
+                  <img src="/south-rally-logo.png" alt="South Rally crest" style={{ width: 28, height: 30, objectFit: 'contain' }} />
+                  <span style={{ fontSize: '13px', fontWeight: 800, letterSpacing: '0.04em' }}>South Rally Club</span>
                 </div>
                 <span style={{
                   fontSize: '9px', fontWeight: 850, padding: '2px 8px',

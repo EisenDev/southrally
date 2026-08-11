@@ -1329,7 +1329,7 @@ export function BookingsCalendarClient({ bookingPricePerHour, daytimePrice, dayt
                     fontSize: '12px', color: '#92400e', display: 'flex', gap: '8px', alignItems: 'center'
                   }}>
                     <Users size={14} color="#d97706" style={{ flexShrink: 0 }} />
-                    <span>Walk-in guest with <strong>no PaddleYard account</strong>. This booking will be recorded for tracking only.</span>
+                    <span>Walk-in guest with <strong>no South Rally account</strong>. This booking will be recorded for tracking only.</span>
                   </div>
 
                   {/* Player Full Name (full width) */}
