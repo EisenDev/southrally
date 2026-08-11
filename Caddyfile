@@ -1,4 +1,4 @@
-southrally.novaryn.com {
+southrally.novaryn.tech {
   encode zstd gzip
   reverse_proxy web:3000
 

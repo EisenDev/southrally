@@ -2,7 +2,7 @@
 
 ## Production topology
 
-- Domain: `southrally.novaryn.com`
+- Domain: `southrally.novaryn.tech`
 - Host: one Ubuntu 24.04 LTS DigitalOcean Droplet
 - Runtime: Docker Compose
 - TLS/reverse proxy: Caddy with automatic Let's Encrypt certificates
@@ -51,7 +51,7 @@ can issue the certificate after ports 80/443 are reachable and DNS resolves.
 docker compose ps
 docker compose logs --tail=100 web
 docker compose logs --tail=100 caddy
-curl -I https://southrally.novaryn.com
+curl -I https://southrally.novaryn.tech
 ```
 
 Expected result: both containers are healthy/running and the HTTPS request
