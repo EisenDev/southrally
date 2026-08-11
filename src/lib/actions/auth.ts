@@ -5,6 +5,10 @@ import bcrypt from 'bcryptjs'
 import { db } from '@/lib/db'
 import { auth, signIn } from '@/lib/auth'
 import { AuthError } from 'next-auth'
+import {
+  buildSouthRallyOtpEmail,
+  buildSouthRallyPasswordResetEmail,
+} from '@/lib/email/south-rally-email'
 
 const SignUpSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -111,23 +115,11 @@ async function sendEmailViaResend(to: string, subject: string, html: string) {
 
 async function sendLoginOtpEmail(email: string, code: string) {
   const brandLogoUrl = `${getPublicAppUrl()}/south-rally-logo.png`
-  console.log('\n=============================================')
-  console.log(`[SOUTH RALLY LOGIN OTP] Code: ${code} for ${email}`)
-  console.log('=============================================\n')
-
-  const html = `
-    <div style="font-family: sans-serif; padding: 24px; max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-      <div style="text-align: center; margin-bottom: 20px;">
-        <img src="${brandLogoUrl}" alt="South Rally crest" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
-      </div>
-      <h2 style="color: #007C80; margin-top: 0; margin-bottom: 16px; font-size: 20px; font-weight: 700; text-align: center;">Admin/Staff Verification</h2>
-      <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: center;">Please use the following 6-digit verification code to complete your login:</p>
-      <div style="font-size: 32px; font-weight: bold; letter-spacing: 6px; padding: 16px; background: #f0fdfa; color: #007C80; text-align: center; border-radius: 8px; margin: 24px 0; border: 1px solid #ccfbf1; font-family: monospace;">
-        ${code}
-      </div>
-      <p style="color: #94a3b8; font-size: 12px; line-height: 1.4; margin-top: 24px; margin-bottom: 0; text-align: center;">This code is valid for 15 minutes. If you did not request this code, you can safely ignore this email.</p>
-    </div>
-  `
+  const html = buildSouthRallyOtpEmail({
+    logoUrl: brandLogoUrl,
+    code,
+    purpose: 'login',
+  })
 
   if (process.env.RESEND_API_KEY) {
     try {
@@ -239,23 +231,11 @@ export async function sendOtpAction(email: string): Promise<ActionResult> {
       }
     })
 
-    console.log('\n=============================================')
-    console.log(`[SOUTH RALLY SIGNUP OTP] Code: ${code} for ${emailNormalized}`)
-    console.log('=============================================\n')
-
-    const htmlContent = `
-      <div style="font-family: sans-serif; padding: 24px; max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <img src="${getPublicAppUrl()}/south-rally-logo.png" alt="South Rally crest" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
-        </div>
-        <h2 style="color: #007C80; margin-top: 0; margin-bottom: 16px; font-size: 20px; font-weight: 700; text-align: center;">Verify your email address</h2>
-        <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: center;">Welcome to South Rally! Please verify your email by entering the 6-digit code below on the signup page:</p>
-        <div style="font-size: 32px; font-weight: bold; letter-spacing: 6px; padding: 16px; background: #f0fdfa; color: #007C80; text-align: center; border-radius: 8px; margin: 24px 0; border: 1px solid #ccfbf1; font-family: monospace;">
-          ${code}
-        </div>
-        <p style="color: #94a3b8; font-size: 12px; line-height: 1.4; margin-top: 24px; margin-bottom: 0; text-align: center;">This code is valid for 15 minutes. If you did not request this code, you can safely ignore this email.</p>
-      </div>
-    `
+    const htmlContent = buildSouthRallyOtpEmail({
+      logoUrl: `${getPublicAppUrl()}/south-rally-logo.png`,
+      code,
+      purpose: 'signup',
+    })
 
     if (process.env.RESEND_API_KEY) {
       // Send email in the background without holding up the user response!
@@ -530,21 +510,10 @@ export async function sendPasswordResetAction(email: string): Promise<ActionResu
     const origin = getPublicAppUrl()
     const resetLink = `${origin}/reset-password?token=${token}`
 
-    const htmlContent = `
-      <div style="font-family: sans-serif; padding: 24px; max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <img src="${origin}/south-rally-logo.png" alt="South Rally crest" style="width: 72px; height: 72px; border-radius: 50%; object-fit: contain; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 4px;" />
-        </div>
-        <h2 style="color: #007C80; margin-top: 0; margin-bottom: 16px; font-size: 20px; font-weight: 700; text-align: center;">Reset your password</h2>
-        <p style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: center;">You requested a password reset for your South Rally account. Please click the button below to choose a new password:</p>
-        <div style="text-align: center; margin: 24px 0;">
-          <a href="${resetLink}" style="background-color: #007C80; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block; box-shadow: 0 4px 6px rgba(0, 124, 128, 0.25);">
-            Reset Password
-          </a>
-        </div>
-        <p style="color: #94a3b8; font-size: 12px; line-height: 1.4; margin-top: 24px; margin-bottom: 0; text-align: center;">If you did not request a password reset, you can safely ignore this email. This link will expire in 1 hour.</p>
-      </div>
-    `
+    const htmlContent = buildSouthRallyPasswordResetEmail({
+      logoUrl: `${origin}/south-rally-logo.png`,
+      resetLink,
+    })
 
     if (process.env.RESEND_API_KEY) {
       await sendEmailViaResend(emailNormalized, 'Reset your South Rally password', htmlContent)
