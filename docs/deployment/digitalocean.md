@@ -31,6 +31,24 @@ Configure these under **Repository → Settings → Secrets and variables → Ac
 
 Never commit production credentials or copy them into `docker-compose.yml`.
 
+## Fresh database seed
+
+The production seed requires `ADMIN_EMAIL` and `ADMIN_PASSWORD` at runtime. It
+creates exactly one verified VIP administrator, ten available courts, and the
+default booking/open-play settings. Credentials must be supplied through the
+runtime environment and must never be stored in the repository.
+
+Resetting production is destructive and must only be run after confirming the
+target Supabase project. A fresh reset removes all accounts, sessions, bookings,
+transactions, events, rewards, vouchers, and settings before applying the
+current Prisma schema and seed.
+
+```bash
+ADMIN_EMAIL='<administrator-email>' \
+ADMIN_PASSWORD='<administrator-password>' \
+npx prisma db seed
+```
+
 ## DNS
 
 Create an `A` record at the DNS provider:

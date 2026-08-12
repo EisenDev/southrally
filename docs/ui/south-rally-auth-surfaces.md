@@ -17,9 +17,12 @@ without changing authentication behavior.
 
 ## Behavior contract
 
-- Email/password signup, OTP verification, Google signup, and session redirect
-  behavior remain unchanged.
-- Sign-in, Google sign-in, password reset, OTP verification, and modal close
-  behavior remain unchanged.
+- Email/password signup, OTP verification, and session redirect behavior remain
+  unchanged.
+- Google sign-in and signup remain visible but disabled until the South Rally
+  Google Cloud OAuth application is configured. Both controls expose a clear
+  “Coming soon” status to assistive technology.
+- Sign-in, password reset, OTP verification, and modal close behavior remain
+  unchanged.
 - Inputs retain associated labels, autocomplete hints, visible focus states,
   and accessible password visibility controls.

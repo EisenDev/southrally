@@ -40,7 +40,7 @@ test('sign-in modal uses only South Rally branding', () => {
 
 test('authentication handlers and accessible form controls are preserved', () => {
   assert.match(signupSource, /signUpWithOtpAction/)
-  assert.match(signupSource, /signIn\('google'/)
+  assert.match(signupSource, /Continue with Google/)
   assert.match(signinSource, /signInAction/)
   assert.match(signinSource, /sendPasswordResetAction/)
   assert.match(signinSource, /aria-modal="true"/)
@@ -71,4 +71,11 @@ test('player dashboard shell uses South Rally branding without changing admin st
   assert.match(sidebarSource, /\/south-rally-logo\.png/)
   assert.match(sidebarSource, /South Rally/)
   assert.doesNotMatch(sidebarSource, legacyBrandPattern)
+})
+
+test('Google authentication controls remain visible but disabled', () => {
+  assert.match(signupSource, /disabled=\{true\}/)
+  assert.match(signupSource, /Google signup is coming soon/)
+  assert.match(signinSource, /disabled=\{true\}/)
+  assert.match(signinSource, /Google sign-in is coming soon/)
 })
